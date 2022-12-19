@@ -1,10 +1,10 @@
-enum Wares {
+enum Pieces {
   King,
   Queen,
   Bishop,
   Night,
   Rook,
-  Pone
+  Pawn
 }
 
 enum Sides {
@@ -17,4 +17,8 @@ interface Location {
   hori: number;
 }
 
-export { Wares, Sides, Location };
+function byString(loc: Location) {
+  return Object.values(loc).join("");
+}
+
+export { Pieces, Sides, Location, byString };
