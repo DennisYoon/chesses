@@ -1,6 +1,9 @@
 import { Pieces, Sides, Location, byString } from "./types4Board";
+import { p /* Piece */ } from "./pieceWizard";
+import { ML /* MovableLocation */ } from "./movableLocations";
 
 export class Board {
+  boardSize: number;
   board = [
     p("w", "k", 8, 5),
     p("w", "q", 8, 4),
@@ -21,90 +24,93 @@ export class Board {
     p("b", "r", 1, 8)
   ];
 
-  constructor() {
+  clicked = false;
+  clickedThingIdx = 0; 
+
+  constructor(boardSize: number) {
     for (let hori = 1; hori <= 8; hori++) {
       this.board.push(p("w", "p", 7, hori));
       this.board.push(p("b", "p", 2, hori));
     }
+
+    this.boardSize = boardSize;
   }
 
-  getMovableLocationsOf(piece: Piece) {
-    const possibleLocations: Location[] = [];
-    /* ~~~ */
-    return possibleLocations;
-  }
-
-  private static sameLocationOf(loc1: Location, loc2: Location) {
-    if (loc1.vert === loc2.vert && loc1.hori === loc2.hori) {
-      return true;
+  getPieceIndexByLocation(location: Location) {
+    let index = 0;
+    for (let piece of this.board) {
+      if (
+        piece.vert === location.vert
+        &&
+        piece.hori === location.hori
+      ) {
+        return index;
+      }
+      index++;
     }
-    return false;
-  }
+    return -1;
+  } 
 
-  activateAllListener() {
-    for (let Piece of this.board) {
-      Piece.activateListener();
-    }
-
-    const allLocations: Location[] = [];
-    for (let vert = 1; vert <= 8; vert++) {
-      for (let hori = 1; hori <= 8; hori++) {
-        allLocations.push({vert, hori});
+  activateListenersOf(side: Sides) {
+    for (let vert = 1; vert <= this.boardSize; vert++) {
+      for (let hori = 1; hori <= this.boardSize; hori++) {
+        const foo = this.getPieceIndexByLocation({vert, hori});
+        if (foo === -1) {
+          const myID = byString({vert, hori});
+          document.getElementById(myID)?.addEventListener("click", () => {
+            console.log("NULL Piece pressed", myID);
+          });
+        } else {
+          const me = this.board[foo];
+          if (me.side === side) {
+            me.activateListener(this.board, (loc: Location) => {
+              this.clicked = true;
+              this.clickedThingIdx = this.getPieceIndexByLocation(loc);
+            });
+          }
+        }
       }
     }
+  }
 
-    for (let oneLocation of allLocations) {
-      /* ~~ */
-    }
+  async clickedPiece() {
+    this.clicked = false;
+    
+    setInterval(() => {
+      console.log("hello");
+      if (this.clicked) {
+        this.clicked = false;
+        console.log("what");
+        return this.clickedThingIdx;
+      }
+    }, 200);
   }
 }
 
-class Piece {
+export class Piece {
   readonly side: Sides;
-  Piece: Pieces;
+  piece: Pieces;
   location: Location;
 
-  constructor(side: Sides, Piece: Pieces, location: Location) {
+  constructor(side: Sides, piece: Pieces, location: Location) {
     this.side = side;
-    this.Piece = Piece;
+    this.piece = piece;
     this.location = location;
   }
 
-  get vertLocation() {
+  get vert() {
     return this.location.vert;
   }
 
-  get horiLocation() {
+  get hori() {
     return this.location.hori;
   }
 
-  activateListener() {
+  activateListener(board: Piece[], callback: Function) {
     document.getElementById(byString(this.location))?.addEventListener("click", () => {
-      console.log("Piece pressed", byString(this.location));
+      const movableLocations = ML.movableLocation(this.piece, this.side, board);
+      console.log(byString(this.location) + "'s movable locations :", movableLocations);
+      callback(this.location);
     });
   }
-}
-
-// 윤형이가 p(어쩌고) 너무 더럽다고 해서 함수 만듦
-type shortSide = "b" | "w";
-type shortPiece = "k" | "q" | "b" | "n" | "r" | "p";
-function p(shortSide: shortSide, shortPiece: shortPiece, vert: number, hori: number) {
-  let side: Sides;
-  let piece: Pieces;
-
-  switch (shortSide) {
-    case "w": side = Sides.White; break;
-    case "b": side = Sides.Black; break;
-  }
-
-  switch (shortPiece) {
-    case "k": piece = Pieces.King; break;
-    case "q": piece = Pieces.Queen; break;
-    case "b": piece = Pieces.Bishop; break;
-    case "n": piece = Pieces.Night; break;
-    case "r": piece = Pieces.Rook; break;
-    case "p": piece = Pieces.Pawn; break;
-  }
-
-  return new Piece(side, piece, {vert, hori});
 }

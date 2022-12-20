@@ -8,8 +8,8 @@ enum Pieces {
 }
 
 enum Sides {
-  Black,
-  White
+  White,
+  Black
 }
 
 interface Location {
@@ -21,4 +21,10 @@ function byString(loc: Location) {
   return Object.values(loc).join("");
 }
 
-export { Pieces, Sides, Location, byString };
+interface Situation {
+  turn: Sides;
+  initLocation: Location;
+  finalLocation: Location;
+}
+
+export { Pieces, Sides, Location, byString, Situation };
