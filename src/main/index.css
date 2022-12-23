@@ -1,19 +1,20 @@
 html, body {
   height: 100%;
   box-sizing: border-box;
-  padding: 5px;
   margin: 0;
-  padding: 0;
 }
 
 html {
   user-select: none;
+  background-color: rgb(183, 206, 150, .7);
+  padding: 0;
 }
 
 body {
   display: grid;
-  grid-template-rows: repeat(3, 1fr);
-  height: 100%;
+  grid-template-rows: auto 96vw auto;
+  gap: 2vw;
+  padding: 2vw;
 }
 
 table {
@@ -21,6 +22,8 @@ table {
   aspect-ratio: 1 / 1;
   border-spacing: 0;
   table-layout: fixed;
+  border-radius: 20px;
+  overflow: hidden;
 }
 
 td {
@@ -36,17 +39,20 @@ td {
 
 #whiteSide {
   color: white;
+  
 }
 
 #blackSide, #whiteSide {
   font-size: 10vw;
-  background-color: gray;
   font-weight: bold;
   padding: 2vw;
+  border-radius: 20px;
+  background-color: rgb(183, 206, 150, .7);
+  transition: background-color 0.3s;
 }
 
 .whiteBoard { background-color: rgb(236, 238, 212) }
-.blackBoard { background-color: rgb(116, 150, 84) }
+.blackBoard { background-color: rgb(179, 148, 99) }
 .movableLocation { background-color: aqua }
 
 .whitePiece {

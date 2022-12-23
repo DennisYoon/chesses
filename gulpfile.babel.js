@@ -10,7 +10,7 @@ const tsProject = ts.createProject("tsconfig.json");
 const routes = {
   typescript: {
     src: ["typescript/modules/*.ts", "typescript/main.ts"],
-    dest: "src",
+    dest: "src/main",
     watch: ["typescript/modules/*.ts", "typescript/main.ts"]
   }
 };
