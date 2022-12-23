@@ -1,15 +1,12 @@
-import { Pieces, Sides, Location, byString } from "./types4Board";
-import { Board } from "./setBoard";
+import { Location, byString } from "./types4game";
+import { PieceStruct } from "./pieceStruct";
 
-export function showBoard(board: Board, boardSize: number, possibleLocations: Location[] = []) {
-  const PieceNames = [Pieces.King, Pieces.Queen, Pieces.Bishop, Pieces.Night, Pieces.Rook, Pieces.Pawn];
-  const PieceNamesK = ["왕", "여왕", "비숍", "말", "룩", "폰"];
-
-  for (let piece of board.board) {
+export function showPieces(pieces: PieceStruct[], boardSize: number, possibleLocations: Location[] = []) {
+  for (let piece of pieces) {
     const ele = document.getElementById(byString(piece.location))!;
     ele.classList.remove("whitePiece", "blackPiece");
-    ele.classList.add(piece.side === Sides.White ? "whitePiece" : "blackPiece");
-    ele.textContent = PieceNamesK[PieceNames.indexOf(piece.piece)];
+    ele.classList.add(["whitePiece", "blackPiece"][piece.side]);
+    ele.textContent = ["왕", "여왕", "비숍", "말", "룩", "폰"][piece.piece];
   }
 
   for (let i = 11; i <= boardSize * 10 + 1; i += 10) {

@@ -1,4 +1,4 @@
-enum Pieces {
+enum Piece {
   King,
   Queen,
   Bishop,
@@ -7,7 +7,7 @@ enum Pieces {
   Pawn
 }
 
-enum Sides {
+enum Side {
   White,
   Black
 }
@@ -22,9 +22,16 @@ function byString(loc: Location) {
 }
 
 interface Situation {
-  turn: Sides;
+  turn: Side;
   initLocation: Location;
   finalLocation: Location;
 }
 
-export { Pieces, Sides, Location, byString, Situation };
+enum Mode {
+  classic,
+  customizable,
+  tenXten,
+  null = -1
+}
+
+export { Piece, Side, Location, byString, Situation, Mode };

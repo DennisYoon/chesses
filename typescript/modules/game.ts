@@ -1,9 +1,7 @@
-import { Pieces, Sides, Location, byString } from "./types4Board";
+import { Side, Location, byString } from "./types4game";
 import { p /* Piece */ } from "./pieceWizard";
-import { ML /* MovableLocation */ } from "./movableLocations";
 
-export class Board {
-  boardSize: number;
+export class Game {
   board = [
     p("w", "k", 8, 5),
     p("w", "q", 8, 4),
@@ -27,13 +25,11 @@ export class Board {
   clicked = false;
   clickedThingIdx = 0; 
 
-  constructor(boardSize: number) {
+  constructor(public boardSize: number) {
     for (let hori = 1; hori <= 8; hori++) {
       this.board.push(p("w", "p", 7, hori));
       this.board.push(p("b", "p", 2, hori));
     }
-
-    this.boardSize = boardSize;
   }
 
   getPieceIndexByLocation(location: Location) {
@@ -51,7 +47,7 @@ export class Board {
     return -1;
   } 
 
-  activateListenersOf(side: Sides) {
+  activateListenersOf(side: Side) {
     for (let vert = 1; vert <= this.boardSize; vert++) {
       for (let hori = 1; hori <= this.boardSize; hori++) {
         const foo = this.getPieceIndexByLocation({vert, hori});
@@ -87,30 +83,3 @@ export class Board {
   }
 }
 
-export class Piece {
-  readonly side: Sides;
-  piece: Pieces;
-  location: Location;
-
-  constructor(side: Sides, piece: Pieces, location: Location) {
-    this.side = side;
-    this.piece = piece;
-    this.location = location;
-  }
-
-  get vert() {
-    return this.location.vert;
-  }
-
-  get hori() {
-    return this.location.hori;
-  }
-
-  activateListener(board: Piece[], callback: Function) {
-    document.getElementById(byString(this.location))?.addEventListener("click", () => {
-      const movableLocations = ML.movableLocation(this.piece, this.side, board);
-      console.log(byString(this.location) + "'s movable locations :", movableLocations);
-      callback(this.location);
-    });
-  }
-}

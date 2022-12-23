@@ -1,50 +1,58 @@
-import { Board } from "./modules/setBoard";
-import { showBoard } from "./modules/showPieces";
 import { createBoard } from "./modules/createBoard";
-import { Sides, Situation } from "./modules/types4Board";
+import { Game } from "./modules/game";
+import { showPieces } from "./modules/showPieces";
 
-interface GameConstructor {
-  boardSize?: number;
-}
+createBoard(8);
+const g = new Game(8);
+showPieces(g.board, 8);
 
-class Game {
-  turn = Sides.White; // 백돌이 선공
-  situation: Situation[] = [];
-  b: Board;
 
-  private boardSize: number;
+// import { showBoard } from "./modules/showPieces";
+// import { createBoard } from "./modules/createBoard";
+// import { Sides, Situation } from "./modules/types4game";
 
-  constructor({boardSize = 8}: GameConstructor) {
-    this.boardSize = boardSize >= 8 ? boardSize : 8;
+// interface GameConstructor {
+//   boardSize?: number;
+// }
 
-    createBoard(this.boardSize);
+// class Game {
+//   turn = Sides.White; // 백돌이 선공
+//   situation: Situation[] = [];
+//   b: Board;
 
-    this.b = new Board(this.boardSize);
-    showBoard(this.b, this.boardSize);
-    this.b.activateListenersOf(this.turn);
-  }
+//   private boardSize: number;
 
-  changeTurn() {
-    this.turn = this.turn === Sides.White ? Sides.Black : Sides.White;
-    showBoard(this.b, this.boardSize);
-  }
+//   constructor({boardSize = 8}: GameConstructor) {
+//     this.boardSize = boardSize >= 8 ? boardSize : 8;
 
-  addSituation(situationToAdd: Situation) {
-    this.situation.push(situationToAdd);
-  }
-}
+//     createBoard(this.boardSize);
 
-async function main() {
-  const g = new Game({
-    boardSize: 8
-  });
+//     this.b = new Board(this.boardSize);
+//     showBoard(this.b, this.boardSize);
+//     this.b.activateListenersOf(this.turn);
+//   }
 
-  while (true) {
-    console.log(g.turn);
-    let clickedThingIdx = await g.b.clickedPiece();
-    console.log(clickedThingIdx);
-    break;
-  }
-}
+//   changeTurn() {
+//     this.turn = this.turn === Sides.White ? Sides.Black : Sides.White;
+//     showBoard(this.b, this.boardSize);
+//   }
 
-main();
+//   addSituation(situationToAdd: Situation) {
+//     this.situation.push(situationToAdd);
+//   }
+// }
+
+// async function main() {
+//   const g = new Game({
+//     boardSize: 8
+//   });
+
+//   while (true) {
+//     console.log(g.turn);
+//     let clickedThingIdx = await g.b.clickedPiece();
+//     console.log(clickedThingIdx);
+//     break;
+//   }
+// }
+
+// main();

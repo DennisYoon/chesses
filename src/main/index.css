@@ -6,15 +6,18 @@ html, body {
 
 html {
   user-select: none;
-  background-color: rgb(183, 206, 150, .7);
   padding: 0;
 }
 
 body {
+  padding: 2vw;
+}
+
+#o {
   display: grid;
   grid-template-rows: auto 96vw auto;
   gap: 2vw;
-  padding: 2vw;
+  height: 100%;
 }
 
 table {
@@ -70,4 +73,11 @@ td {
 }
 .blackPiece:hover {
   color: rgb(56, 60, 80);
+}
+
+.possibleURL { background-color: rgb(183, 206, 150, .7) }
+.impossibleURL { background-color: white }
+
+#x {
+  display: none;
 }

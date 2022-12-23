@@ -1,18 +1,18 @@
-import { Sides, Location, Pieces } from "./types4Board";
-import { Piece } from "./setBoard";
+import { Side, Location, Piece } from "./types4game";
+import { PieceStruct } from "./pieceStruct";
 
 const anyLocArr: Location[] = [{vert: 1, hori: 1}];
 
 export class ML {
-  public static movableLocation(piece: Pieces, side: Sides, board: Piece[]) {
+  public static movableLocation(piece: Piece, side: Side, board: PieceStruct[]) {
     switch (piece) {
-      case Pieces.King: return ML.king(side, board);
-      case Pieces.Queen: return ML.queen(side, board);
-      case Pieces.Bishop: return ML.bishop(side, board);
-      case Pieces.Night: return ML.night(side, board);
-      case Pieces.Rook: return ML.rook(side, board);
-      case Pieces.Pawn:
-        if (side === Sides.White) {
+      case Piece.King: return ML.king(side, board);
+      case Piece.Queen: return ML.queen(side, board);
+      case Piece.Bishop: return ML.bishop(side, board);
+      case Piece.Night: return ML.night(side, board);
+      case Piece.Rook: return ML.rook(side, board);
+      case Piece.Pawn:
+        if (side === Side.White) {
           return ML.whitePawn(side, board);
         } else {
           return ML.blackPawn(side, board);
@@ -20,31 +20,31 @@ export class ML {
     }
   }
 
-  private static king(side: Sides, board: Piece[]) {
+  private static king(side: Side, board: PieceStruct[]) {
     return anyLocArr;
   }
 
-  private static queen(side: Sides, board: Piece[]) {
+  private static queen(side: Side, board: PieceStruct[]) {
     return anyLocArr;
   }
 
-  private static bishop(side: Sides, board: Piece[]) {
+  private static bishop(side: Side, board: PieceStruct[]) {
     return anyLocArr;
   }
 
-  private static night(side: Sides, board: Piece[]) {
+  private static night(side: Side, board: PieceStruct[]) {
     return anyLocArr;
   }
 
-  private static rook(side: Sides, board: Piece[]) {
+  private static rook(side: Side, board: PieceStruct[]) {
     return anyLocArr;
   }
 
-  private static whitePawn(side: Sides, board: Piece[]) {
+  private static whitePawn(side: Side, board: PieceStruct[]) {
     return anyLocArr;
   }
 
-  private static blackPawn(side: Sides, board: Piece[]) {
+  private static blackPawn(side: Side, board: PieceStruct[]) {
     return anyLocArr;
   }
 } // movable location
