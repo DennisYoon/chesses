@@ -15,14 +15,22 @@ body {
 
 #o {
   display: grid;
-  grid-template-rows: auto 96vw auto;
+  grid-template-rows: auto calc(96vw * 1.12) auto;
   gap: 2vw;
   height: 100%;
 }
 
+#x {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  font-size: 5vw;
+}
+
 table {
   width: 100%;
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 1 / 1.12;
   border-spacing: 0;
   table-layout: fixed;
   border-radius: 20px;
@@ -50,9 +58,22 @@ td {
   font-weight: bold;
   padding: 2vw;
   border-radius: 20px;
-  background-color: rgb(183, 206, 150, .7);
-  transition: background-color 0.3s;
+  background-color: rgb(148, 182, 101);
+  opacity: 0.95;
+  transition: opacity 0.3s;
 }
+
+#full {
+  position: absolute;
+  top: 1vw;
+  right: 1vw;
+}
+
+#fullscreen {
+  width: 8vw;
+}
+
+.opacityDown { opacity: 0.3 !important }
 
 .whiteBoard { background-color: rgb(236, 238, 212) }
 .blackBoard { background-color: rgb(179, 148, 99) }
@@ -68,16 +89,19 @@ td {
   transform: rotate(180deg);
 }
 
-.whitePiece:hover {
-  color: rgb(212, 233, 243);
+.choosableWhite:hover {
+  background-color: rgb(188, 190, 168);
+  cursor: pointer;
 }
-.blackPiece:hover {
-  color: rgb(56, 60, 80);
+.choosableBlack:hover {
+  background-color: rgb(134, 111, 74);
+  cursor: pointer;
 }
+
+.chosenWhite { background-color: rgb(186,222,224) }
+.chosenBlack { background-color: rgb(106, 153, 183); }
 
 .possibleURL { background-color: rgb(183, 206, 150, .7) }
 .impossibleURL { background-color: white }
 
-#x {
-  display: none;
-}
+.hideEle { display: none !important }
