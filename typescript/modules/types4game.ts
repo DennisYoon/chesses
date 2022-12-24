@@ -4,17 +4,19 @@ enum Piece {
   Bishop,
   Night,
   Rook,
-  Pawn
+  Pawn,
+  null = -1
 }
 
 enum Side {
   White,
-  Black
+  Black,
+  null = -1
 }
 
 interface Location {
-  vert: number;
-  hori: number;
+  vert: number; // 세로
+  hori: number; // 가로
 }
 
 function byString(loc: Location) {

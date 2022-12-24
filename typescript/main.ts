@@ -1,58 +1,44 @@
-import { createBoard } from "./modules/createBoard";
 import { Game } from "./modules/game";
-import { showPieces } from "./modules/showPieces";
+import { Mode, Side } from "./modules/types4game";
 
-createBoard(8);
-const g = new Game(8);
-showPieces(g.board, 8);
+import { checkURL } from "./modules/urlChecker";
+import { applyFullscreen } from "./modules/fullscreen";
 
 
-// import { showBoard } from "./modules/showPieces";
-// import { createBoard } from "./modules/createBoard";
-// import { Sides, Situation } from "./modules/types4game";
+applyFullscreen();
 
-// interface GameConstructor {
-//   boardSize?: number;
-// }
+const body = document.querySelector("body");
+const o = document.querySelector("#o");
+const x = document.querySelector("#x");
 
-// class Game {
-//   turn = Sides.White; // 백돌이 선공
-//   situation: Situation[] = [];
-//   b: Board;
+const whiteSide = document.querySelector("#whiteSide");
+const blackSide = document.querySelector("#blackSide");
 
-//   private boardSize: number;
+if (checkURL(window.location.href) === Mode.null) {
+  body?.classList.add("impossibleURL");
+  o?.classList.add("hideEle");
+} else {
+  body?.classList.add("possibleURL");
+  x?.classList.add("hideEle");
+  playGame();
+}
 
-//   constructor({boardSize = 8}: GameConstructor) {
-//     this.boardSize = boardSize >= 8 ? boardSize : 8;
+async function playGame() {
+  const BOARDSIZE = 8;
+  const TURN = Side.White;
+  const g = new Game(BOARDSIZE);
 
-//     createBoard(this.boardSize);
+  let mls;
+  while (true) {
+    g.showPieces([]);
+    if (TURN === Side.White) {
+      blackSide?.classList.add("opacityDown");
+    } else {
+      whiteSide?.classList.add("opacityDown");
+    }
 
-//     this.b = new Board(this.boardSize);
-//     showBoard(this.b, this.boardSize);
-//     this.b.activateListenersOf(this.turn);
-//   }
-
-//   changeTurn() {
-//     this.turn = this.turn === Sides.White ? Sides.Black : Sides.White;
-//     showBoard(this.b, this.boardSize);
-//   }
-
-//   addSituation(situationToAdd: Situation) {
-//     this.situation.push(situationToAdd);
-//   }
-// }
-
-// async function main() {
-//   const g = new Game({
-//     boardSize: 8
-//   });
-
-//   while (true) {
-//     console.log(g.turn);
-//     let clickedThingIdx = await g.b.clickedPiece();
-//     console.log(clickedThingIdx);
-//     break;
-//   }
-// }
-
-// main();
+    const chosenIndex = await g.willMoveListener(TURN);
+    mls = g.movableLocationsOf(chosenIndex);
+    g.showPieces(mls);
+  }
+}

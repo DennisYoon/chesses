@@ -1,50 +1,85 @@
-import { Side, Location, Piece } from "./types4game";
+import { Side, Piece, Location, byString } from "./types4game";
 import { PieceStruct } from "./pieceStruct";
 
-const anyLocArr: Location[] = [{vert: 1, hori: 1}];
+const foo: Location[] = [];
 
-export class ML {
-  public static movableLocation(piece: Piece, side: Side, board: PieceStruct[]) {
-    switch (piece) {
-      case Piece.King: return ML.king(side, board);
-      case Piece.Queen: return ML.queen(side, board);
-      case Piece.Bishop: return ML.bishop(side, board);
-      case Piece.Night: return ML.night(side, board);
-      case Piece.Rook: return ML.rook(side, board);
-      case Piece.Pawn:
-        if (side === Side.White) {
-          return ML.whitePawn(side, board);
-        } else {
-          return ML.blackPawn(side, board);
-        }
+function getPieceWhoseLocationIs(locationX: number, locaionY: number, board: PieceStruct[]) {
+  const location: Location = {vert: locationX, hori: locaionY};
+
+  let index: number = -1;
+  board.forEach((piece, i) => {
+    if (byString(piece.location) === byString(location)) {
+      index = i;
+      return;
     }
+  });
+  if (index === -1) {
+    return new PieceStruct(Side.null, Piece.null, {vert: 0, hori: 0});
+  } else {
+    return board[index];
+  }
+}
+
+function king(piece: PieceStruct, board: PieceStruct[], bs: number) {
+  return foo;
+}
+
+function queen(piece: PieceStruct, board: PieceStruct[], bs: number) {
+  return foo;
+}
+
+function bishop(piece: PieceStruct, board: PieceStruct[], bs: number) {
+  return foo;
+}
+
+function night(piece: PieceStruct, board: PieceStruct[], bs: number) {
+  return foo;
+}
+
+function rook(piece: PieceStruct, board: PieceStruct[], bs: number) {
+  const movableLocations: Location[] = [];
+
+  function repeatedThings(vert: number, hori: number): boolean {
+    const presentPiece = getPieceWhoseLocationIs(vert, hori, board);
+    if (presentPiece.side !== Side.null && presentPiece.piece !== Piece.null) {
+      if (presentPiece.side !== piece.side) {  
+        movableLocations.push({vert, hori});
+        return true;
+      } else {
+        return true;
+      }
+    } else {
+      movableLocations.push({vert, hori});
+      return false;
+    }
+    
   }
 
-  private static king(side: Side, board: PieceStruct[]) {
-    return anyLocArr;
+  for (let vert = piece.vert + 1; vert <= bs; vert++) {
+    if (repeatedThings(vert, piece.hori)) break;
+  };
+
+  for (let vert = piece.vert - 1; vert >= 1; vert--) {
+    if (repeatedThings(vert, piece.hori)) break;
   }
 
-  private static queen(side: Side, board: PieceStruct[]) {
-    return anyLocArr;
+  for (let hori = piece.hori + 1; hori <= bs; hori++) {
+    if (repeatedThings(piece.vert, hori)) break;
   }
 
-  private static bishop(side: Side, board: PieceStruct[]) {
-    return anyLocArr;
+  for (let hori = piece.hori - 1; hori >= 1; hori--) {
+    if (repeatedThings(piece.vert, hori)) break;
   }
 
-  private static night(side: Side, board: PieceStruct[]) {
-    return anyLocArr;
-  }
+  return movableLocations;
+}
 
-  private static rook(side: Side, board: PieceStruct[]) {
-    return anyLocArr;
-  }
+function wPawn(piece: PieceStruct, board: PieceStruct[], bs: number) {
+  return foo;
+}
 
-  private static whitePawn(side: Side, board: PieceStruct[]) {
-    return anyLocArr;
-  }
+function bPawn(piece: PieceStruct, board: PieceStruct[], bs: number) {
+  foo;
+}
 
-  private static blackPawn(side: Side, board: PieceStruct[]) {
-    return anyLocArr;
-  }
-} // movable location
+export const ml = { king, queen, bishop, night, rook, wPawn, bPawn };

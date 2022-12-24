@@ -1,7 +1,7 @@
 import { Location, byString } from "./types4game";
 import { PieceStruct } from "./pieceStruct";
 
-export function showPieces(pieces: PieceStruct[], boardSize: number, possibleLocations: Location[] = []) {
+export function showPiecesFN(pieces: PieceStruct[], boardSize: number, possibleLocations: Location[] = []) {
   for (let piece of pieces) {
     const ele = document.getElementById(byString(piece.location))!;
     ele.classList.remove("whitePiece", "blackPiece");
@@ -15,8 +15,15 @@ export function showPieces(pieces: PieceStruct[], boardSize: number, possibleLoc
   }
 
   for (let possibleLocation of possibleLocations) {
-    const ele = document.getElementById(byString(possibleLocation))!;
-    ele.classList.remove("whiteBoard", "blackBoard");
-    ele.classList.add("movableLocation");
+    const ele = document.getElementById(byString(possibleLocation));
+    ele?.classList.remove("whiteBoard", "blackBoard");
+    ele?.classList.add(
+      ["chosenWhite", "chosenBlack"]
+          [
+            Array.from(ele.id)
+              .map(v => parseInt(v))
+              .reduce((a, b) => a + b, 0) % 2
+          ]
+    );
   }
 }
