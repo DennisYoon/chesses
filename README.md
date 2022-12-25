@@ -1,4 +1,4 @@
-<img src="https://img.shields.io/badge/version-0.1.0-black" />
+<img src="https://img.shields.io/badge/version-0.2.1-black" />
 
 # 체스 구현체
 
