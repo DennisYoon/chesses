@@ -1,4 +1,4 @@
-<img src="https://img.shields.io/badge/version-0.2.1-black" />
+<img src="https://img.shields.io/badge/version-0.2.2-black" />
 
 # 체스 구현체
 
@@ -12,3 +12,4 @@
 |2022-12-23|1. 모드 선택 창 생성.<br>2. 판의 디자인과 색상 변경, 배경색상 변경.<br>3. 흑 or 백 차례를 시각적으로 알려주기 위해 자기 쪽 박스에 색상 변화.<br>4. 이름들 대폭 변경.<br>5. `urlChecker` 추가.<br>6. `pieceStruct` 분리.|
 |2022-12-24|1. 잘못된 파라미터로 접속시 `일리걸 엑세스`창으로 접속.<br>2. 전체화면 모드 생성.<br>3. `setsetWillMoveListenersOf` 메소드 생성.<br>4. `Game` 클래스 파괴 밑 `Board` 클래스를 `Game` 클래스로 변경.<br>5. `board` 비율 변경.<br>6. `Piece` enum과 `Side` enum에 `null` 값 추가.<br>7. 기물 선택 시 이벤트 생성. (`waitUntil` 함수도)<br>8. `movableLocations`의 `rook` 함수 제작.<br>9. 움직일 수 있는 곳 시각적으로 표시.<br>10. 흑 or 백 차례를 시각적으로 알려주기 위해 자기 쪽 박스에 색상 변화 코딩.|
 |2022-Christmas|1. commit 내용 수정.|
+|2023-01-05|1. 선택했을 때 움직일 수 있는 곳 디자인 변경.<br>2. `night`의 `movableLocations` 구현.<br>3. `customizable` 접근 금지.|

@@ -9,7 +9,16 @@ export function createBoard(bs: number) {
       const td = document.createElement("td");
       td.setAttribute("id", trs.toString() + tds.toString());
       td.classList.add((trs + tds) % 2 ? "blackBoard" : "whiteBoard");
+
+      const text = document.createElement("div");
+      text.setAttribute("class", "text");
+
+      const touch = document.createElement("div");
+      touch.classList.add("touch", "hideEle");
+      touch.textContent = "O";
+
       tr.append(td);
-    })
-  })
+      td.append(text, touch);
+    });
+  });
 }

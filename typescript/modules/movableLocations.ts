@@ -3,8 +3,8 @@ import { PieceStruct } from "./pieceStruct";
 
 const foo: Location[] = [];
 
-function getPieceWhoseLocationIs(locationX: number, locaionY: number, board: PieceStruct[]) {
-  const location: Location = {vert: locationX, hori: locaionY};
+function getPieceWhoseLocationIs(locationX: number, locationY: number, board: PieceStruct[]) {
+  const location: Location = {vert: locationX, hori: locationY};
 
   let index: number = -1;
   board.forEach((piece, i) => {
@@ -33,7 +33,24 @@ function bishop(piece: PieceStruct, board: PieceStruct[], bs: number) {
 }
 
 function night(piece: PieceStruct, board: PieceStruct[], bs: number) {
-  return foo;
+  let movableLocations: Location[] = [
+    { vert: piece.vert + 2, hori: piece.hori + 1 },
+    { vert: piece.vert + 2, hori: piece.hori - 1 },
+    { vert: piece.vert - 2, hori: piece.hori + 1 },
+    { vert: piece.vert - 2, hori: piece.hori - 1 },
+
+    { vert: piece.vert + 1, hori: piece.hori + 2 },
+    { vert: piece.vert - 1, hori: piece.hori + 2 },
+    { vert: piece.vert + 1, hori: piece.hori - 2 },
+    { vert: piece.vert - 1, hori: piece.hori - 2 }
+  ]
+  .filter(loc => Object.values(loc).every(v => v >= 1 && v <= bs))
+  .filter(loc => {
+    const presentPiece = getPieceWhoseLocationIs(loc.vert, loc.hori, board);
+    return presentPiece.side !== piece.side;
+  });
+
+  return movableLocations;
 }
 
 function rook(piece: PieceStruct, board: PieceStruct[], bs: number) {

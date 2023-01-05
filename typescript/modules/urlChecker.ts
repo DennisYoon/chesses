@@ -6,9 +6,9 @@ export function checkURL(urlStr: string) {
   if (mode === "classic") {
     return Mode.classic;
   } else if (mode === "customizable") {
-    return Mode.customizable;
+    return Mode.null;
   } else if (mode === "tenXten") {
-    return Mode.tenXten;
+    return Mode.null;
   } else {
     return Mode.null;
   }

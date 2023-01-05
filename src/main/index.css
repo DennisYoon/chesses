@@ -41,6 +41,7 @@ td {
   text-align: center;
   font-weight: bold;
   font-size:5vw;
+  position: relative;
 }
 
 #blackSide {
@@ -98,10 +99,19 @@ td {
   cursor: pointer;
 }
 
-.chosenWhite { background-color: rgb(186,222,224) }
-.chosenBlack { background-color: rgb(106, 153, 183); }
-
 .possibleURL { background-color: rgb(183, 206, 150, .7) }
 .impossibleURL { background-color: white }
 
 .hideEle { display: none !important }
+.showEle { display: absolute !important }
+
+.touch {
+  position: absolute;
+  transform: translate(-50%, -55%);
+  top: 50%;
+  left: 50%;
+  opacity: .3;
+  font-size: 6vw;
+  font-weight: bold;
+  color: rgb(84, 134, 235);
+}
