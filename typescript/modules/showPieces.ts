@@ -26,3 +26,15 @@ export function showPiecesFN(pieces: PieceStruct[], boardSize: number, possibleL
     ele?.classList.add("showEle");
   }
 }
+
+export function initBoard(boardSize: number) {
+  for (let vert = 1; vert <= boardSize; vert++) {
+    for (let hori = 1; hori <= boardSize; hori++) {
+      const ele = document
+        .getElementById(byString({vert, hori}))
+        ?.querySelector(".touch");
+      ele?.classList.remove("hideEle", "showEle");
+      ele?.classList.add("hideEle");
+    }
+  }
+}

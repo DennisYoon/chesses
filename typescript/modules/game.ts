@@ -12,9 +12,9 @@ export class Game {
     p("w", "q", 8, 4),
     p("w", "b", 8, 3),
     p("w", "b", 8, 6),
-    p("w", "n", 5, 2),
+    p("w", "n", 8, 2),
     p("w", "n", 8, 7),
-    p("w", "r", 4, 4),
+    p("w", "r", 8, 1),
     p("w", "r", 8, 8),
     
     p("b", "k", 1, 5),
@@ -33,23 +33,24 @@ export class Game {
       this.board.push(p("w", "p", 7, hori));
       this.board.push(p("b", "p", 2, hori));
     }
-    this.board[16] = new PieceStruct(Side.White, Piece.Pawn, {vert: 5, hori: 5});
   }
 
   showPieces(possibleLocations: Location[] = []) {
     showPiecesFN(this.board, this.bs, possibleLocations);
   }
 
-  async willMoveListener(side: Side) {
-    let willMovePieceIdx = -1;
+  async willMoveListener(side: Side, movableLocations: Location[] = []) {
+    console.log(movableLocations);
+    
+    let willMoveLocation = { vert: -1, hori: -1 };
 
-    function thisListener(pieceIDX: number) {
+    function thisListener(location: Location) {
       return () => {
-        willMovePieceIdx = pieceIDX;
+        willMoveLocation = location;
       }
     }
 
-    this.board.forEach((piece, pieceIDX) => {
+    this.board.forEach(piece => {
       if (piece.side === side) {
         const me = document.getElementById(byString(piece.location))!;
         me?.classList.add(
@@ -60,19 +61,38 @@ export class Game {
               .reduce((a, b) => a + b, 0) % 2
           ]
         );
-        me?.addEventListener("click", thisListener(pieceIDX));
+        me?.addEventListener("click", thisListener(piece.location));
       }
     });
-    
-    await waitUntil(() => willMovePieceIdx !== -1);
 
-    this.board.forEach((piece, pieceIDX) => {
+    for (let movableLocation of movableLocations) {
+      const me = document.getElementById(byString(movableLocation));
+      me?.classList.add(
+        ["choosableWhite", "choosableBlack"]
+        [
+          Array.from(me.id)
+            .map(v => parseInt(v))
+            .reduce((a, b) => a + b, 0) % 2
+        ]
+      );
+      me?.addEventListener("click", thisListener(movableLocation));
+    }
+    
+    await waitUntil(() => willMoveLocation.hori !== -1);
+
+    this.board.forEach(piece => {
       const me = document.getElementById(byString(piece.location));
       me?.classList.remove("choosableBlack", "choosableWhite");
-      me?.removeEventListener("click", thisListener(pieceIDX));
+      me?.removeEventListener("click", thisListener(piece.location));
     });
 
-    return willMovePieceIdx;
+    for (let movableLocation of movableLocations) {
+      const me = document.getElementById(byString(movableLocation));
+      me?.classList.remove("choosableBlack", "choosableWhite");
+      me?.removeEventListener("click", thisListener(movableLocation));
+    }
+
+    return willMoveLocation;
   }
 
   movableLocationsOf(pieceIndex: number) {
