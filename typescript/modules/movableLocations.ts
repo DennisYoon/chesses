@@ -1,9 +1,7 @@
 import { Side, Piece, Location, byString } from "./types4game";
 import { PieceStruct } from "./pieceStruct";
 
-const foo: Location[] = [];
-
-function getPieceWhoseLocationIs(locationX: number, locationY: number, board: PieceStruct[]) {
+export function getPieceWhoseLocationIs(locationX: number, locationY: number, board: PieceStruct[]) {
   const location: Location = {vert: locationX, hori: locationY};
 
   let index: number = -1;
@@ -54,7 +52,7 @@ function bishop(piece: PieceStruct, board: PieceStruct[], bs: number) {
   let movableLocations: Location[] = [];
 
   function repeatedThings(vert: number, hori: number): boolean {
-    if ([vert, hori].some(v => v < 0 || v > bs)) {
+    if ([vert, hori].some(v => v <= 0 || v > bs)) {
       return true;
     }
     const presentPiece = getPieceWhoseLocationIs(vert, hori, board);
@@ -163,15 +161,10 @@ function wPawn(piece: PieceStruct, board: PieceStruct[], bs: number) {
   const movableLocations: Location[] = [];
   const possibleMove = !piece.haveMoved ? 2 : 1;
 
-  for (let vert = piece.vert - 1; vert >= 0 && vert >= piece.vert - possibleMove; vert--) {
+  for (let vert = piece.vert - 1; vert >= 1 && vert >= piece.vert - possibleMove; vert--) {
     const presentPiece = getPieceWhoseLocationIs(vert, piece.hori, board);
     if (presentPiece.piece !== Piece.null) {
-      if (presentPiece.side === piece.side) {
-        break;
-      } else {
-        movableLocations.push({vert, hori: piece.hori});
-        break;
-      }
+      break;
     }
     movableLocations.push({vert, hori: piece.hori});
   }
@@ -186,6 +179,19 @@ function wPawn(piece: PieceStruct, board: PieceStruct[], bs: number) {
     movableLocations.push({ vert: piece.vert - 1, hori: piece.hori - 1});
   }
 
+  if (piece.vert === 4) {
+    var presentPiece = getPieceWhoseLocationIs(piece.vert, piece.hori - 1, board);
+    console.log(presentPiece.twoTimesRightBefore);
+    if (presentPiece.side !== piece.side && presentPiece.piece === Piece.Pawn && presentPiece.twoTimesRightBefore) {
+      movableLocations.push({ vert: piece.vert - 1, hori: piece.hori - 1 });
+    }
+
+    var presentPiece = getPieceWhoseLocationIs(piece.vert, piece.hori + 1, board);
+    if (presentPiece.side !== piece.side && presentPiece.piece === Piece.Pawn && presentPiece.twoTimesRightBefore) {
+      movableLocations.push({ vert: piece.vert - 1, hori: piece.hori + 1 });
+    }
+  }
+
   return movableLocations;
 }
 
@@ -196,12 +202,7 @@ function bPawn(piece: PieceStruct, board: PieceStruct[], bs: number) {
   for (let vert = piece.vert + 1; vert <= bs && vert <= piece.vert + possibleMove; vert++) {
     const presentPiece = getPieceWhoseLocationIs(vert, piece.hori, board);
     if (presentPiece.piece !== Piece.null) {
-      if (presentPiece.side === piece.side) {
-        break;
-      } else {
-        movableLocations.push({vert, hori: piece.hori});
-        break;
-      }
+      break;
     }
     movableLocations.push({vert, hori: piece.hori});
   }
@@ -214,6 +215,19 @@ function bPawn(piece: PieceStruct, board: PieceStruct[], bs: number) {
   var presentPiece = getPieceWhoseLocationIs(piece.vert + 1, piece.hori - 1, board);
   if (presentPiece.side !== piece.side && presentPiece.side !== Side.null) {
     movableLocations.push({ vert: piece.vert + 1, hori: piece.hori - 1});
+  }
+
+  if (piece.vert === 5) {
+    var presentPiece = getPieceWhoseLocationIs(piece.vert, piece.hori - 1, board);
+    console.log(presentPiece.twoTimesRightBefore);
+    if (presentPiece.side !== piece.side && presentPiece.piece === Piece.Pawn && presentPiece.twoTimesRightBefore) {
+      movableLocations.push({ vert: piece.vert + 1, hori: piece.hori - 1 });
+    }
+
+    var presentPiece = getPieceWhoseLocationIs(piece.vert, piece.hori + 1, board);
+    if (presentPiece.side !== piece.side && presentPiece.piece === Piece.Pawn && presentPiece.twoTimesRightBefore) {
+      movableLocations.push({ vert: piece.vert + 1, hori: piece.hori + 1 });
+    }
   }
 
   return movableLocations;

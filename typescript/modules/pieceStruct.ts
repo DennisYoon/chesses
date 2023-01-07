@@ -4,6 +4,7 @@ type nullAble<T> = T | null;
 
 export class PieceStruct {
   haveMoved: nullAble<boolean> = null;
+  twoTimesRightBefore: nullAble<boolean> = null;
 
   constructor(
     public readonly side: Side,
@@ -12,6 +13,7 @@ export class PieceStruct {
   ) {
     if (this.piece === Piece.Pawn) {
       this.haveMoved = false;
+      this.twoTimesRightBefore = false;
     }
   }
 
