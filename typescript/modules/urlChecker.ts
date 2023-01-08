@@ -8,7 +8,7 @@ export function checkURL(urlStr: string) {
   } else if (mode === "customizable") {
     return Mode.null;
   } else if (mode === "tenXten") {
-    return Mode.null;
+    return Mode.tenXten;
   } else {
     return Mode.null;
   }

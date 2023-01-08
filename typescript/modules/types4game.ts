@@ -4,6 +4,7 @@ enum Piece {
   Bishop,
   Night,
   Rook,
+  NighQueen,
   Pawn,
   null = -1
 }
@@ -36,4 +37,9 @@ enum Mode {
   null = -1
 }
 
-export { Piece, Side, Location, byString, Situation, Mode };
+interface Eaten {
+  white: string[],
+  black: string[]
+}
+
+export { Piece, Side, Location, byString, Situation, Mode, Eaten };

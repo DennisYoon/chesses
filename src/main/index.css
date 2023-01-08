@@ -82,11 +82,9 @@ td {
 
 .whitePiece {
   color: white;
-  text-shadow: 1px 1px 5px black;
 }
 .blackPiece {
   color: black;
-  text-shadow: 1px 1px 5px white;
   transform: rotate(180deg);
 }
 
@@ -114,4 +112,81 @@ td {
   font-size: 6vw;
   font-weight: bold;
   color: rgb(84, 134, 235);
+}
+
+.text {
+  background-image: url("../imgs/chess-pieces.png");
+  aspect-ratio: 1 / 1;
+  /* background-size: 600% 200%; */
+  background-size: 0 0;
+  background-position: 0% 0%;
+}
+
+.eaten {
+  font-size: 3vw;
+}
+
+.whiteNighQueen {
+  background-image: url("../imgs/백마탄여왕.png") !important;
+}
+
+.blackNighQueen {
+  background-image: url("../imgs/흑마탄여왕.png") !important;
+}
+
+#shower {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  font-size: 5vw;
+  background-color: rgba(128, 128, 128, 0.621);
+  width: 70vw;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  font-size: 10vw;
+  transform: translate(-50%, -50%) rotate(0deg);
+  text-align: center;
+}
+
+#promotionWindow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(0deg);
+  background-color: rgb(128, 128, 128);
+  width: 80vw;
+  aspect-ratio: 16 / 9;
+  text-align: center;
+  display: grid;
+  grid-template-rows: 1fr 6fr;
+  visibility: hidden;
+}
+
+h1 {
+  margin: 0;
+}
+
+#promotionGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1vw;
+}
+
+#promotionGrid div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 5vw;
+  border: 1px solid rgb(0, 81, 255);
+  background-color: rgba(0, 0, 255, 0.165);
+  transition: background-color 0.5s;
+}
+
+#promotionGrid div:hover {
+  background-color: rgba(0, 0, 255, 0.394);
+}
+
+#special {
+  visibility: hidden;
 }

@@ -36,6 +36,30 @@ function king(piece: PieceStruct, board: PieceStruct[], bs: number) {
     return presentPiece.side !== piece.side;
   });
 
+  if (piece.haveMoved === false) {
+    if (
+      Array(bs / 2 - 2).fill(0).map((_, i) => i + 1).every(v => getPieceWhoseLocationIs(piece.vert, piece.hori + v, board).piece === -1)
+      &&
+      getPieceWhoseLocationIs(piece.vert, bs, board).haveMoved === false
+    ) {
+      movableLocations.push({
+        vert: piece.vert,
+        hori: piece.hori + 2
+      });
+    }
+  
+    if (
+      Array(bs / 2 - 1).fill(0).map((_, i) => i + 1).every(v => getPieceWhoseLocationIs(piece.vert, piece.hori - v, board).piece === -1)
+      &&
+      getPieceWhoseLocationIs(piece.vert, 1, board).haveMoved === false
+      ) {
+      movableLocations.push({
+        vert: piece.vert,
+        hori: piece.hori - 2
+      });
+    }
+  }
+  
   return movableLocations;
 }
 
@@ -179,9 +203,8 @@ function wPawn(piece: PieceStruct, board: PieceStruct[], bs: number) {
     movableLocations.push({ vert: piece.vert - 1, hori: piece.hori - 1});
   }
 
-  if (piece.vert === 4) {
+  if (piece.vert === 4 && bs === 8) {
     var presentPiece = getPieceWhoseLocationIs(piece.vert, piece.hori - 1, board);
-    console.log(presentPiece.twoTimesRightBefore);
     if (presentPiece.side !== piece.side && presentPiece.piece === Piece.Pawn && presentPiece.twoTimesRightBefore) {
       movableLocations.push({ vert: piece.vert - 1, hori: piece.hori - 1 });
     }
@@ -217,9 +240,8 @@ function bPawn(piece: PieceStruct, board: PieceStruct[], bs: number) {
     movableLocations.push({ vert: piece.vert + 1, hori: piece.hori - 1});
   }
 
-  if (piece.vert === 5) {
+  if (piece.vert === 5 && bs === 8) {
     var presentPiece = getPieceWhoseLocationIs(piece.vert, piece.hori - 1, board);
-    console.log(presentPiece.twoTimesRightBefore);
     if (presentPiece.side !== piece.side && presentPiece.piece === Piece.Pawn && presentPiece.twoTimesRightBefore) {
       movableLocations.push({ vert: piece.vert + 1, hori: piece.hori - 1 });
     }
@@ -233,4 +255,16 @@ function bPawn(piece: PieceStruct, board: PieceStruct[], bs: number) {
   return movableLocations;
 }
 
-export const ml = { king, queen, bishop, night, rook, wPawn, bPawn };
+function nighQueen(piece: PieceStruct, board: PieceStruct[], bs: number) {
+  let movableLocations: Location[] = [
+    ...bishop(piece, board, bs),
+    ...rook(piece, board, bs),
+    ...night(piece, board, bs)
+  ];
+
+  movableLocations = movableLocations.filter((ele, idx) => movableLocations.indexOf(ele) === idx);
+
+  return movableLocations;
+}
+
+export const ml = { king, queen, bishop, night, rook, nighQueen, wPawn, bPawn };

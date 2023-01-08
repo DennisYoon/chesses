@@ -1,4 +1,4 @@
-<img src="https://img.shields.io/badge/version-0.4.0-black" />
+<img src="https://img.shields.io/badge/version-0.4.1-black" />
 
 # 체스 구현체
 
@@ -14,4 +14,5 @@
 |2022-Christmas|1. commit 내용 수정.|
 |2023-01-05|1. 선택했을 때 움직일 수 있는 곳 디자인 변경.<br>2. `night`의 `movableLocations` 구현.<br>3. `customizable` 접근 금지.|
 |2022-01-06|1. 앙파상과 프로모션 제외 기물 움직임 모두 구현 완!<br>2. 기물 선택 취소 가능.<br>3. 움직임 반 구현.|
-|2022-01-07|1. 기본적인 기물의 움직임 & 앙파상 구현!!<br>2. 차례 확인 오류 수정.<br>3. 함수 분리.
+|2022-01-07|1. 기본적인 기물의 움직임 & 앙파상 구현!!<br>2. 차례 확인 오류 수정.<br>3. 함수 분리.|
+|2022-01-08|1. 기물 이미지로 변경.<br>2. 먹은거 구현.<br>3. tenXten mode 구현.<br>4. 캐슬링 구현.<br>5. 프로모션 구현.|

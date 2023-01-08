@@ -15,6 +15,10 @@ export class PieceStruct {
       this.haveMoved = false;
       this.twoTimesRightBefore = false;
     }
+
+    if ([Piece.King, Piece.Rook].some(v => v === this.piece)) {
+      this.haveMoved = false;
+    }
   }
 
   get vert() {

@@ -1,7 +1,8 @@
 import { PieceStruct } from "./pieceStruct";
 
 export function showBoardTable(board: PieceStruct[], bs: number) {
-  let table: string[][] = [];
+  console.clear();
+  let table: any[][] = [];
 
   for (let i = 0; i < bs; i++) {
     table.push([]);
@@ -11,10 +12,10 @@ export function showBoardTable(board: PieceStruct[], bs: number) {
   }
 
   for (let piece of board) {
-    table[piece.vert - 1][piece.hori - 1] = ["왕", "여왕", "비숍", "말", "룩", "폰"][piece.piece];
+    table[piece.vert - 1][piece.hori - 1] = piece;
   }
   
   for (let line of table) {
-    console.log(line);
+    // console.log(line);
   }
 }
