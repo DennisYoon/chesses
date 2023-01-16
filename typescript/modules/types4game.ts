@@ -38,8 +38,8 @@ enum Mode {
 }
 
 interface Eaten {
-  white: string[],
-  black: string[]
+  white: Piece[],
+  black: Piece[]
 }
 
 export { Piece, Side, Location, byString, Situation, Mode, Eaten };

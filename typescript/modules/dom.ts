@@ -8,6 +8,14 @@ const blackSide = document.querySelector("#blackSide");
 const blackEaten = document.querySelector("#whiteSide .eaten");
 const whiteEaten = document.querySelector("#blackSide .eaten");
 
+const shower = document.querySelector<HTMLElement>("#shower")!;
+
+const wTimer = document.querySelector<HTMLElement>("#whiteSide .timer")!;
+const bTimer = document.querySelector<HTMLElement>("#blackSide .timer")!;
+
+const promotionGrid = document.querySelector<HTMLElement>("#promotionGrid");
+const special = document.querySelector("#special");
+
 export {
   body,
   o,
@@ -15,5 +23,10 @@ export {
   whiteSide,
   blackSide,
   whiteEaten,
-  blackEaten
+  blackEaten,
+  shower,
+  wTimer,
+  bTimer,
+  promotionGrid,
+  special
 };

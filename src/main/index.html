@@ -10,18 +10,30 @@
   <body>
     <div id="o">
       <div id="blackSide">
-        <span>흑</span>
+        <div class="align">
+          <span>흑</span>
+          <div class="timer">00:00</div>
+        </div>
         <div class="eaten" style="color: white">먹은거: 없음</div>
       </div>
+
       <table id="board"></table>
+
       <div id="whiteSide">
-        <span>백</span>
-        <div class="eaten" style="color: black">먹은거: 없음</div>
+        <div class="align">
+          <span>백</span>
+          <div class="timer">00:00</div>
         </div>
+        <div class="eaten" style="color: black">먹은거: 없음</div>
+      </div>
+
+
       <div id="full">
         <img src="../imgs/fullscreen.png" alt="fullscreen" id="fullscreen">
       </div>
+
       <div id="shower"></div>
+
       <div id="promotionWindow">
         <h1>승진</h1>
         <div id="promotionGrid">

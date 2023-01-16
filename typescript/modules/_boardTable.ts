@@ -1,7 +1,7 @@
 import { PieceStruct } from "./pieceStruct";
 
 export function showBoardTable(board: PieceStruct[], bs: number) {
-  console.clear();
+  // console.clear();
   let table: any[][] = [];
 
   for (let i = 0; i < bs; i++) {
@@ -16,6 +16,6 @@ export function showBoardTable(board: PieceStruct[], bs: number) {
   }
   
   for (let line of table) {
-    // console.log(line);
+    console.log(line);
   }
 }

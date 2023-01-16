@@ -72,14 +72,24 @@ function queen(piece: PieceStruct, board: PieceStruct[], bs: number) {
   return movableLocations;
 }
 
+function getIndexWhoseLocationIs(location: Location, board: PieceStruct[]) {
+  let index: number = -1;
+  board.forEach((piece, i) => {
+    if (byString(piece.location) === byString(location)) {
+      index = i;
+      return;
+    }
+  });
+  return index;
+}
+
 function bishop(piece: PieceStruct, board: PieceStruct[], bs: number) {
   let movableLocations: Location[] = [];
-
   function repeatedThings(vert: number, hori: number): boolean {
     if ([vert, hori].some(v => v <= 0 || v > bs)) {
       return true;
     }
-    const presentPiece = getPieceWhoseLocationIs(vert, hori, board);
+    const presentPiece = board[getIndexWhoseLocationIs(piece.location, board)];
     if (presentPiece.piece !== Piece.null) {
       if (presentPiece.side === piece.side) {
         return true;
@@ -98,21 +108,19 @@ function bishop(piece: PieceStruct, board: PieceStruct[], bs: number) {
     if (repeatedThings(vert, hori)) break;
     
   }
-
   for (let [vert, hori] = [piece.vert, piece.hori];;) {
     vert++; hori--;
     if (repeatedThings(vert, hori)) break;
   }
-
   for (let [vert, hori] = [piece.vert, piece.hori];;) {
     vert--; hori++;
     if (repeatedThings(vert, hori)) break;
   }
-
   for (let [vert, hori] = [piece.vert, piece.hori];;) {
     vert--; hori--;
     if (repeatedThings(vert, hori)) break;
   }
+  
 
   movableLocations = movableLocations.filter(loc => {
     const presentPiece = getPieceWhoseLocationIs(loc.vert, loc.hori, board);

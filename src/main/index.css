@@ -30,11 +30,13 @@ body {
 
 table {
   width: 100%;
-  aspect-ratio: 1 / 1.12;
+  aspect-ratio: 1 / 1.15;
   border-spacing: 0;
   table-layout: fixed;
   border-radius: 20px;
+  border: 8px solid rgb(51, 18, 18);
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 td {
@@ -59,7 +61,7 @@ td {
   font-weight: bold;
   padding: 2vw;
   border-radius: 20px;
-  background-color: rgb(148, 182, 101);
+  background-color:gray;
   opacity: 0.95;
   transition: opacity 0.3s;
 }
@@ -97,7 +99,7 @@ td {
   cursor: pointer;
 }
 
-.possibleURL { background-color: rgb(183, 206, 150, .7) }
+.possibleURL { background-color: rgb(192, 192, 192) }
 .impossibleURL { background-color: white }
 
 .hideEle { display: none !important }
@@ -111,7 +113,7 @@ td {
   opacity: .3;
   font-size: 6vw;
   font-weight: bold;
-  color: rgb(84, 134, 235);
+  color: cadetblue;
 }
 
 .text {
@@ -169,7 +171,7 @@ h1 {
 
 #promotionGrid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 1vw;
 }
 
@@ -189,4 +191,22 @@ h1 {
 
 #special {
   visibility: hidden;
+}
+
+.align {
+  display: flex;
+
+}
+
+.timer {
+  margin-left: auto;
+}
+
+#undo {
+  position: absolute;
+  width: 15vw;
+  font-size: 5vw;
+  opacity: .3;
+  bottom: 0;
+  right: 0;
 }
