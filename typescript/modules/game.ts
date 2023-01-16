@@ -137,7 +137,7 @@ export class Game {
     if (virtual) {
       const lastBoard = JSON.stringify(this.board);
 
-      movableLocations = fnToRun(me, this.board, this.bs)
+      movableLocations = movableLocations
         .filter(location => {
           this.board = JSON.parse(lastBoard);
           this.board = this.board.map(v => {
@@ -148,7 +148,6 @@ export class Game {
           });
           
           this.moveTo(me.location, location, {show: false, notation: new Notation});
-          console.log(this.checkcheck());
           return this.checkcheck() === this.turn || this.checkcheck() === Side.null;
         });
   
