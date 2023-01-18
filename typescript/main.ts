@@ -161,45 +161,10 @@ async function playGame() {
       }
 
       // 3회 동행 판별
-      const notion = n.notation.map(v => Object.values(v).toString()).map(v => v.replaceAll(",", ""));
-      let trifold = false;
-      for (let range = 2; range < Math.floor(notion.length / 3); range += 2) {
-        for (let start = 0; start < range; start++) {
-          const arr = twoDimenArr(notion.slice(start), range).map(v => v.toString());
-          console.log(arr);
-          let repeat = 0;
-          let preEle = "";
-          for (let ele of arr) {
-            if (preEle === ele) {
-              repeat += 1;
-            } else {
-              repeat = 0;
-            }
-            preEle = ele;
-            if (repeat >= 3) {
-              trifold = true;
-              break;
-            }
-          }
-          if (trifold) {
-            break;
-          }
-        }
-        if (trifold) {
-          break;
-        }
-      }
+      
+    
 
-      if (trifold) {
-        // 타이머 종료
-        clearInterval(t.wTimer);
-        clearInterval(t.bTimer);
-
-        s.trifoldRepitition.play();
-        shower.innerHTML = "3회 동형반복<br>의한 무승부!!";
-        shower.style.display = "flex";
-        break;
-      }
+      
     }
 
     g.showPieces();
