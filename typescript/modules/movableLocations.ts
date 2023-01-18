@@ -18,7 +18,7 @@ export function getPieceWhoseLocationIs(locationX: number, locationY: number, bo
   }
 }
 
-function king(piece: PieceStruct, board: PieceStruct[], bs: number) {
+function king(piece: PieceStruct, board: PieceStruct[], bs: number, cc = true) {
   let movableLocations: Location[] = [
     { vert: piece.vert + 1, hori: piece.hori + 1 },
     { vert: piece.vert + 1, hori: piece.hori - 1 },
@@ -33,6 +33,7 @@ function king(piece: PieceStruct, board: PieceStruct[], bs: number) {
   .filter(loc => Object.values(loc).every(v => v >= 1 && v <= bs))
   .filter(loc => {
     const presentPiece = getPieceWhoseLocationIs(loc.vert, loc.hori, board);
+    if (presentPiece.side === Side.null && !cc) return false;
     return presentPiece.side !== piece.side;
   });
 
@@ -63,20 +64,20 @@ function king(piece: PieceStruct, board: PieceStruct[], bs: number) {
   return movableLocations;
 }
 
-function queen(piece: PieceStruct, board: PieceStruct[], bs: number) {
+function queen(piece: PieceStruct, board: PieceStruct[], bs: number, cc = true) {
   const movableLocations = [
-    ...bishop(piece, board, bs),
-    ...rook(piece, board, bs)
+    ...bishop(piece, board, bs, cc),
+    ...rook(piece, board, bs, cc)
   ];
 
   return movableLocations;
 }
 
-function bishop(piece: PieceStruct, board: PieceStruct[], bs: number) {
+function bishop(piece: PieceStruct, board: PieceStruct[], bs: number, cc = true) {
   let movableLocations: Location[] = [];
 
   function repeatedThings(vert: number, hori: number): boolean {
-    if ([vert, hori].some(v => v < 0 || v > bs)) {
+    if ([vert, hori].some(v => v <= 0 || v > bs)) {
       return true;
     }
     const presentPiece = getPieceWhoseLocationIs(vert, hori, board);
@@ -88,7 +89,8 @@ function bishop(piece: PieceStruct, board: PieceStruct[], bs: number) {
         return true;
       }
     } else {
-      movableLocations.push({vert, hori});
+      if (cc)
+        movableLocations.push({vert, hori});
     }
     return false;
   }
@@ -122,7 +124,7 @@ function bishop(piece: PieceStruct, board: PieceStruct[], bs: number) {
   return movableLocations;
 }
 
-function night(piece: PieceStruct, board: PieceStruct[], bs: number) {
+function night(piece: PieceStruct, board: PieceStruct[], bs: number, cc = true) {
   let movableLocations: Location[] = [
     { vert: piece.vert + 2, hori: piece.hori + 1 },
     { vert: piece.vert + 2, hori: piece.hori - 1 },
@@ -137,18 +139,19 @@ function night(piece: PieceStruct, board: PieceStruct[], bs: number) {
   .filter(loc => Object.values(loc).every(v => v >= 1 && v <= bs))
   .filter(loc => {
     const presentPiece = getPieceWhoseLocationIs(loc.vert, loc.hori, board);
+    if (presentPiece.side === Side.null && !cc) return false;
     return presentPiece.side !== piece.side;
   });
 
   return movableLocations;
 }
 
-function rook(piece: PieceStruct, board: PieceStruct[], bs: number) {
+function rook(piece: PieceStruct, board: PieceStruct[], bs: number, cc = true) {
   const movableLocations: Location[] = [];
 
   function repeatedThings(vert: number, hori: number): boolean {
     const presentPiece = getPieceWhoseLocationIs(vert, hori, board);
-    if (presentPiece.side !== Side.null && presentPiece.piece !== Piece.null) {
+    if (presentPiece.side !== Side.null) {
       if (presentPiece.side !== piece.side) {  
         movableLocations.push({vert, hori});
         return true;
@@ -156,7 +159,8 @@ function rook(piece: PieceStruct, board: PieceStruct[], bs: number) {
         return true;
       }
     } else {
-      movableLocations.push({vert, hori});
+      if (cc)
+        movableLocations.push({vert, hori});
       return false;
     }
     
@@ -255,11 +259,11 @@ function bPawn(piece: PieceStruct, board: PieceStruct[], bs: number) {
   return movableLocations;
 }
 
-function nighQueen(piece: PieceStruct, board: PieceStruct[], bs: number) {
+function nighQueen(piece: PieceStruct, board: PieceStruct[], bs: number, cc = true) {
   let movableLocations: Location[] = [
-    ...bishop(piece, board, bs),
-    ...rook(piece, board, bs),
-    ...night(piece, board, bs)
+    ...bishop(piece, board, bs, cc),
+    ...rook(piece, board, bs, cc),
+    ...night(piece, board, bs, cc)
   ];
 
   movableLocations = movableLocations.filter((ele, idx) => movableLocations.indexOf(ele) === idx);

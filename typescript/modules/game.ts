@@ -23,6 +23,7 @@ export class Game {
   public turn = Side.White;
   public eatens: Eaten = { white: [], black: [] };
   public showdelay = 2000;
+  public moves = 0;
 
   constructor(public bs: number) {
     this.board = bs === 10 ? tenXten() : classic();
@@ -148,7 +149,7 @@ export class Game {
           });
           
           this.moveTo(me.location, location, {show: false, notation: new Notation});
-          return this.checkcheck() === this.turn || this.checkcheck() === Side.null;
+          return !this.ifMySideChecked(this.turn);
         });
   
       this.board = JSON.parse(lastBoard);
@@ -159,7 +160,68 @@ export class Game {
         return newThing;
       });
     }
-    
+
+    // 캐슬링 실패!
+    if (me.piece === Piece.King && me.haveMoved === false) {
+      /* 킹 사이드 */ {
+        const kingVert = me.vert;
+        let kingHori = me.hori;
+        let kingSide = [];
+        for (kingHori = me.hori + 1; kingHori <= this.boardsize - 1; kingHori ++) {
+          const meKingCheck = this.ifMySideChecked(
+            this.turn,
+            new PieceStruct(
+              this.turn,
+              me.piece,
+              {
+                vert: kingVert,
+                hori: kingHori
+              }
+            )
+          );
+          kingSide.push(meKingCheck);
+        }
+        if (kingSide.some(v => v === true) || this.ifMySideChecked(this.turn)) {
+          const castlingLoc = movableLocations.indexOf({vert: me.vert, hori: me.hori + 2});
+          if (castlingLoc !== -1) {
+            movableLocations = movableLocations.filter(v => byString(v) !== byString({
+              vert: me.vert,
+              hori: me.hori + 2
+            }));
+          }
+        }
+      }
+      
+      /* 퀸 사이드 */ {
+        const kingVert = me.vert;
+        let kingHori = me.hori;
+        let queenSide = [];
+        for (kingHori = me.hori - 1; kingHori <= 2; kingHori --) {
+          const meKingCheck = this.ifMySideChecked(
+            this.turn,
+            new PieceStruct(
+              this.turn,
+              me.piece,
+              {
+                vert: kingVert,
+                hori: kingHori
+              }
+            )
+          );
+          queenSide.push(meKingCheck);
+        }
+        if (queenSide.some(v => v === true) || this.ifMySideChecked(this.turn)) {
+          const castlingLoc = movableLocations.indexOf({vert: me.vert, hori: me.hori - 2});
+          if (castlingLoc !== -1) {
+            movableLocations = movableLocations.filter(v => byString(v) !== byString({
+              vert: me.vert,
+              hori: me.hori - 2
+            }));
+          }
+        }
+      }
+    }
+
     return movableLocations ?? [];
   }
 
@@ -217,33 +279,70 @@ export class Game {
     return index;
   }
 
-  public checkcheck() {
-    let checkTo = Side.null;
-    let turnturn = [this.turn, this.turn ? Side.White : Side.Black];
-    for (let turn of turnturn) {
-      let mes = [];
-      for (let piece of this.board) {
-        if (piece.side === turn) {
-          mes.push(piece);
-        }
-      }
-  
-      let whereICanMove: Location[] = [];
-
-      mes.map(me => {
-        return this.movableLocationsOf(this.getIndexWhoseLocationIs(me.location), false);
-      }).forEach(v => {
-        whereICanMove = [...whereICanMove, ...v];
-      });
-
-      
-      const oppoKing = this.getKingOfOppo(turn);
-      if (whereICanMove.map(v => byString(v)).indexOf(byString(oppoKing.location)) !== -1) {
-        checkTo = turn ? Side.Black : Side.White;
-      }
+  public ifMySideChecked(turn: Side, alter: PieceStruct = new PieceStruct(Side.null, Piece.null, {vert: -1, hori: -1})) {
+    let myKing = this.board.filter(v => v.piece === Piece.King && v.side === turn)[0];
+    if (alter.side !== Side.null) {
+      myKing = alter;
     }
+
+    // Rook & Queen & NighQueen
+    const r = ml.rook(myKing, this.board, this.boardsize, false).filter(v => {
+      const me = this.getPieceWhoseLocationIs(v);
+      return [Piece.Queen, Piece.Rook, Piece.NighQueen].some(v => me.piece === v);
+    });
+    if (r.length) return true;
+
+    // Bishop & Queen & NighQueen
+    const b = ml.bishop(myKing, this.board, this.boardsize, false).filter(v => {
+      const me = this.getPieceWhoseLocationIs(v);
+      return [Piece.Bishop, Piece.Queen, Piece.NighQueen].some(v => me.piece === v);
+    });
+    if (b.length) return true;
+
+    // Night & NighQueen
+    const n = ml.night(myKing, this.board, this.boardsize, false).filter(v => {
+      const me = this.getPieceWhoseLocationIs(v);
+      return [Piece.Night, Piece.NighQueen].some(v => me.piece === v);
+    });
+    if (n.length) return true;
+
+    // Pone
+    let movableLocations: Location[] = [];
+    if (turn === Side.White) {
+      movableLocations = [
+        {vert: myKing.vert - 1, hori: myKing.hori + 1},
+        {vert: myKing.vert - 1, hori: myKing.hori - 1}
+      ];
+    }
+    if (turn === Side.Black) {
+      movableLocations = [
+        {vert: myKing.vert + 1, hori: myKing.hori + 1},
+        {vert: myKing.vert + 1, hori: myKing.hori - 1}
+      ];
+    }
+    movableLocations = movableLocations
+      .filter(loc => Object.values(loc).every(v => v >= 1 && v <= this.boardsize))
+      .filter(loc => {
+        const presentPiece = this.getPieceWhoseLocationIs(loc);
+        if (presentPiece.piece === Piece.null) return false;
+        return presentPiece.side !== turn;
+      });
     
-    return checkTo;
+    movableLocations.filter(v => {
+      const me = this.getPieceWhoseLocationIs(v);
+      return [Piece.Pawn].some(v => me.piece === v);
+    });
+    const p = movableLocations;
+    if (p.length) return true;
+
+    // King
+    const k = ml.king(myKing, this.board, this.boardsize, false).filter(v => {
+      const me = this.getPieceWhoseLocationIs(v);
+      return [Piece.King].some(v => me.piece === v);
+    });
+    if (k.length) return true;
+
+    return false;
   }
 
   public getKingOfOppo(mySide: Side) {
@@ -258,6 +357,7 @@ export class Game {
   public async moveTo(presentLocation: Location, willMoveLocation: Location, {show, notation}: {show:boolean, notation:Notation}) {
     let removeIDX = this.getIndexWhoseLocationIs(willMoveLocation);
     const presentPiece = this.board[this.getIndexWhoseLocationIs(presentLocation)];
+    let makeZero = false;
 
     /* 기본적인 움직임(먹기) */
     if (removeIDX !== -1 && this.board[removeIDX].side !== this.turn) {
@@ -276,6 +376,9 @@ export class Game {
         ...this.board.slice(0, removeIDX),
         ...this.board.slice(removeIDX + 1, this.board.length)
       ];
+
+      if (show)
+        makeZero = true;
     }
 
     /* 앙파상 */
@@ -314,6 +417,8 @@ export class Game {
         presentPiece.twoTimesRightBefore = true;
       }
       presentPiece.haveMoved = true;
+      if (show)
+        makeZero = true;
     }
 
     /* 캐슬링 */
@@ -364,6 +469,13 @@ export class Game {
 
     /* 움직이기! */
     presentPiece.location = willMoveLocation;
+    if (show) {
+      if (makeZero) {
+        this.moves = 0;
+      } else {
+        this.moves += 1;
+      }
+    }
 
     /* 프로모션 */
     if (willMoveLocation.vert === (presentPiece.side ? this.boardsize : 1) && presentPiece.piece === Piece.Pawn && show) {
@@ -390,5 +502,85 @@ export class Game {
     }
 
     return;
+  }
+
+  public getPieceWhoseLocationIs(location: Location) {
+    let index: number = -1;
+    this.board.forEach((piece, i) => {
+      if (byString(piece.location) === byString(location)) {
+        index = i;
+        return;
+      }
+    });
+    if (index === -1) {
+      return new PieceStruct(Side.null, Piece.null, {vert: 0, hori: 0});
+    } else {
+      return this.board[index];
+    }
+  }
+
+  public impossibilityOfCheckMate() {
+    const white = this.board.filter(v => v.side === Side.White);
+    const black = this.board.filter(v => v.side === Side.Black);
+
+    // 둘 다 킹만 살아있다
+    if (white.length === 1 && black.length === 1) {
+      return true;
+    }
+
+    // 한쪽은 킹만, 다른 쪽은 킹, 같은 색 비숍이 남을 때
+    if (
+      white.length === 1
+      && black.filter(v => v.piece === Piece.Bishop).length === black.length - 1
+      && black
+      .filter(v => v.piece === Piece.Bishop)
+      .map(v => (v.vert + v.hori) % 2)
+      .every((v, _, arr) => v === arr[0])
+    ) {
+      return true;
+    }
+    if (
+      black.length === 1
+      && white.filter(v => v.piece === Piece.Bishop).length === white.length - 1
+      && white
+      .filter(v => v.piece === Piece.Bishop)
+      .map(v => (v.vert + v.hori) % 2)
+      .every((v, _, arr) => v === arr[0])
+    ) {
+      return true;
+    }
+
+    // 한쪽은 킹만, 다른 쪽은 킹, 나이트 1개 남을 때
+    if (white.length === 1 && black.length === 2 && black.filter(v => v.piece === Piece.Night).length === 1) {
+      return true;
+    }
+    if (black.length === 1 && white.length === 2 && white.filter(v => v.piece === Piece.Night).length === 1) {
+      return true;
+    }
+
+    // 양쪽 모두 킹 + 비숍 (비숍 색 같음)
+    if (
+      white.filter(v => v.piece === Piece.Bishop).length === white.length - 1
+      && black.filter(v => v.piece === Piece.Bishop).length === black.length - 1
+      && white
+        .filter(v => v.piece === Piece.Bishop)
+        .map(v => (v.vert + v.hori) % 2)
+        .every((v, _, arr) => v === arr[0])
+      && black
+        .filter(v => v.piece === Piece.Bishop)
+        .map(v => (v.vert + v.hori) % 2)
+        .every((v, _, arr) => v === arr[0])
+    ) {
+      const wBishop1 = white.filter(v => v.piece === Piece.Bishop)[0];
+      const wBishopLoc = (wBishop1.vert + wBishop1.hori) % 2;
+
+      const bBishop1 = black.filter(v => v.piece === Piece.Bishop)[0];
+      const bBishopLoc = (bBishop1.vert + bBishop1.hori) % 2;
+
+      if (wBishopLoc === bBishopLoc) {
+        return true;
+      }
+    }
+    return false;
   }
 }

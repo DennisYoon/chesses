@@ -6,10 +6,13 @@ import { urlAccess } from "./modules/urlAccess";
 import { eatenPieces } from "./modules/eatenPieces";
 import { Timer } from "./modules/timer";
 import { Notation } from "./modules/notation";
+import { shower } from "./modules/dom";
 
 /* Game Variables */
 let BOARDSIZE = 8;
 let MODE: Mode;
+let checkedOnce = false;
+let timeOver = false;
 
 /* 게임 전 */
 urlAccess(window.location.href).then(mode => {
@@ -39,25 +42,176 @@ async function playGame() {
   t.start(g.turn);
 
   t.startCountDown();
+
+  const timeOut = setInterval(() => {
+    if (t.white <= 0) {
+      // 타이머 종료
+      clearInterval(t.wTimer);
+      clearInterval(t.bTimer);
+
+      shower.innerHTML = "시간 초과에 의한<br>흑돌의 승!!";
+      shower.style.color = "red";
+      shower.style.display = "flex";
+      if (g.turn === Side.White)
+        shower.style.transform = "translate(-50%, -50%) rotate(180deg)";
+      
+      timeOver = true;
+      clearInterval(timeOut);
+    }
+    if (t.black <= 0) {
+      // 타이머 종료
+      clearInterval(t.wTimer);
+      clearInterval(t.bTimer);
+
+      shower.innerHTML = "시간 초과에 의한<br>백돌의 승!!";
+      shower.style.color = "red";
+      shower.style.display = "flex";
+      if (g.turn === Side.White)
+        shower.style.transform = "translate(-50%, -50%) rotate(180deg)";
+
+      timeOver = true;
+      clearInterval(timeOut);
+    }
+  }, 200);
+
   while (true) {
+    // 체크 보여주기
+    if (!checkedOnce) {
+      const checkTo = g.ifMySideChecked(g.turn);
+      if (checkTo) {
+        g.showCheckMSG();
+        s.check.play();
+        checkedOnce = true;
+      }
+    }
+    
     g.showPresentTurn();
 
     const { chosenLocation, choosingAction } = await g.willMoveListener(g.turn);
+    if (timeOver) break;
     if (choosingAction) {
       g.showWillMoveLocatoin(chosenLocation);
     } else {
       await g.moveTo(g.presentLocation, chosenLocation, { show: true, notation: n });
-      const checkTo = g.checkcheck();
-      if (checkTo !== Side.null) {
-        g.showCheckMSG();
-      }
       s.pieceSet.play();
       g.init();
       g.changeTurn(t);
       g.twoTimesRightBeforeFalse();
+      checkedOnce = false;
+
+      // checkmate & stalemate 판별
+      if (
+        g.board
+          .filter(v => v.side === g.turn)
+          .map(v => g.movableLocationsOf(g.getIndexWhoseLocationIs(v.location), true).length)
+          .every(v => v === 0)
+      ) {
+        // 타이머 종료
+        clearInterval(t.wTimer);
+        clearInterval(t.bTimer);
+
+        // 먹은거 추가
+        eatenPieces(g.eatens);
+
+        if (g.ifMySideChecked(g.turn)) {
+          //체크 메이트
+          s.checkmate.play();
+          if (g.turn) {
+            shower.innerHTML = "체크 메이트!!<br>백돌 승!";
+          } else {
+            shower.innerHTML = "체크 메이트!!<br>흑돌 승!";
+          }
+          shower.style.color = "red";
+          shower.style.display = "flex";
+          if (g.turn === Side.White) {
+            shower.style.transform = "translate(-50%, -50%) rotate(180deg)";
+          }
+        } else {
+          // 스테일 메이트
+          s.stalemate.play();
+          shower.innerHTML = "스테일 메이트에<br>의한 무승부!!";
+          shower.style.display = "flex";
+        }
+        //게임 종료
+        break;
+      }
+
+      // 50수 판별
+      if (g.moves >= 50) {
+        // 타이머 종료
+        clearInterval(t.wTimer);
+        clearInterval(t.bTimer);
+
+        s.fiftyMoves.play();
+        shower.innerHTML = "50수 룰에<br>의한 무승부!!";
+        shower.style.display = "flex";
+        break;
+      }
+
+      // 체크메이트 불가 판별
+      if (g.impossibilityOfCheckMate()) {
+        // 타이머 종료
+        clearInterval(t.wTimer);
+        clearInterval(t.bTimer);
+
+        s.impossibilityOfCheckmate.play();
+        shower.innerHTML = "체크메이트 불가에<br>의한 무승부!!";
+        shower.style.display = "flex";
+        break;
+      }
+
+      // 3회 동행 판별
+      const notion = n.notation.map(v => Object.values(v).toString()).map(v => v.replaceAll(",", ""));
+      let trifold = false;
+      for (let range = 2; range < Math.floor(notion.length / 3); range += 2) {
+        for (let start = 0; start < range; start++) {
+          const arr = twoDimenArr(notion.slice(start), range).map(v => v.toString());
+          console.log(arr);
+          let repeat = 0;
+          let preEle = "";
+          for (let ele of arr) {
+            if (preEle === ele) {
+              repeat += 1;
+            } else {
+              repeat = 0;
+            }
+            preEle = ele;
+            if (repeat >= 3) {
+              trifold = true;
+              break;
+            }
+          }
+          if (trifold) {
+            break;
+          }
+        }
+        if (trifold) {
+          break;
+        }
+      }
+
+      if (trifold) {
+        // 타이머 종료
+        clearInterval(t.wTimer);
+        clearInterval(t.bTimer);
+
+        s.trifoldRepitition.play();
+        shower.innerHTML = "3회 동형반복<br>의한 무승부!!";
+        shower.style.display = "flex";
+        break;
+      }
     }
 
     g.showPieces();
     eatenPieces(g.eatens);
   }
+
+  // 게임 종료 후
+  g.showPieces();
+}
+
+function twoDimenArr(arr: any[], chuck: number) {
+  return arr.map((_, i) => {
+    return i % chuck ? [] : arr.slice(i, i + chuck);
+  }); // thank you chatGPT
 }
