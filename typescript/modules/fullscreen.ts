@@ -4,11 +4,11 @@ export function applyFullscreen() {
   
   fullscreenDIV?.addEventListener("click", () => {
     if (!document.fullscreenElement) {
-      fullscreenIMG?.setAttribute("src", "../imgs/exit-fullscreen.png");
+      fullscreenIMG?.setAttribute("src", "../../imgs/exit-fullscreen.png");
       document.documentElement.requestFullscreen();
     } else {
       if (document.exitFullscreen) {
-        fullscreenIMG?.setAttribute("src", "../imgs/fullscreen.png");
+        fullscreenIMG?.setAttribute("src", "../../imgs/fullscreen.png");
         document.exitFullscreen();
       }
     }

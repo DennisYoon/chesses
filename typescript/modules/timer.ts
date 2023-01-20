@@ -58,6 +58,11 @@ export class Timer {
       bTimer.style.color = this.black / 60 <= 1 ? "red" : "white";
     }, 200);
   }
+
+  clear() {
+    clearInterval(this.wTimer);
+    clearInterval(this.bTimer);
+  }
 }
 
 export function toMin(second: number) {

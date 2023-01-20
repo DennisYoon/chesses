@@ -6,7 +6,7 @@ export function checkURL(urlStr: string) {
   if (mode === "classic") {
     return Mode.classic;
   } else if (mode === "customizable") {
-    return Mode.null;
+    return Mode.customizable;
   } else if (mode === "tenXten") {
     return Mode.tenXten;
   } else {

@@ -110,14 +110,14 @@ td {
   transform: translate(-50%, -55%);
   top: 50%;
   left: 50%;
-  opacity: .3;
+  opacity: 1;
   font-size: 6vw;
   font-weight: bold;
   color: cadetblue;
 }
 
 .text {
-  background-image: url("../imgs/chess-pieces.png");
+  background-image: url("../../imgs/chess-pieces.png");
   aspect-ratio: 1 / 1;
   /* background-size: 600% 200%; */
   background-size: 0 0;
@@ -129,11 +129,11 @@ td {
 }
 
 .whiteNighQueen {
-  background-image: url("../imgs/백마탄여왕.png") !important;
+  background-image: url("../../imgs/백마탄여왕.png") !important;
 }
 
 .blackNighQueen {
-  background-image: url("../imgs/흑마탄여왕.png") !important;
+  background-image: url("../../imgs/흑마탄여왕.png") !important;
 }
 
 #shower {
@@ -209,4 +209,30 @@ h1 {
   opacity: .3;
   bottom: 0;
   right: 0;
+}
+
+.customPieces {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  font-size: 4vw;
+  height: 100%;
+  gap: 1vw;
+}
+
+.customPieces div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid black;
+}
+
+.customPieces div:hover {
+  background-color: rgb(85, 85, 85) !important;
+}
+
+.custom {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  height: 100%;
+  gap: 2vw;
 }

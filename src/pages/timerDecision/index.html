@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="index.css">
+    <title>체스 구현체 | 타이머 시간 선택</title>
+  </head>
+  <body>
+    <h1><span id="chess">시간을</span><br>선택하세요</h1>
+    <hr>
+    <div id="selec">
+      <h2>기본 시간</h2>
+      <div>
+        <input type="number" min="1" max="60" value="12" id="bm"> 분
+        <input type="number" min="0" max="59" value="00" id="bs"> 초
+      </div>
+      <h2>추가 시간</h2>
+      <div>
+        <input type="number" min="1" max="60" value="0" id="am"> 분
+        <input type="number" min="0" max="59" value="5" id="as"> 초
+      </div>
+    </div>
+    <button>선택 완</button>
+    <script>
+      const b = document.querySelector("button");
+      const mode = new URL(window.location.href).searchParams.get("mode");
+      b.addEventListener("click", () => {
+        window.location.href = `../main/index.html?mode=${mode}&basicTime=${bm.value * 60 + parseInt(bs.value)}&addTime=${am.value * 60 + parseInt(as.value)}`;
+      });
+    </script>
+  </body>
+</html>

@@ -25,14 +25,19 @@ export class Game {
   public showdelay = 2000;
   public moves = 0;
 
-  constructor(public bs: number) {
-    this.board = bs === 10 ? tenXten() : classic();
-    this.boardsize = bs;
-    createBoard(bs);
+  constructor({boardsize, customBoard = []}: {boardsize: number, customBoard: PieceStruct[]}) {
+    if (customBoard.length) {
+      this.board = customBoard;
+    } else {
+      this.board = boardsize === 10 ? tenXten() : classic();
+    }
+    
+    this.boardsize = boardsize;
+    createBoard(this.boardsize);
   }
 
   public showPieces(possibleLocations: Location[] = []) {
-    showPiecesFN(this.board, this.bs, possibleLocations);
+    showPiecesFN(this.board, this.boardsize, possibleLocations);
   }
 
   public async willMoveListener(side: Side) {
@@ -133,7 +138,7 @@ export class Game {
       }
     }
 
-    let movableLocations = fnToRun(me, this.board, this.bs);
+    let movableLocations = fnToRun(me, this.board, this.boardsize);
 
     if (virtual) {
       const lastBoard = JSON.stringify(this.board);
@@ -243,8 +248,9 @@ export class Game {
 
   public showCheckMSG() {
     shower.innerHTML = "체!크!";
+    shower.style.color = "yellow";
     shower.style.display = "flex";
-    if (this.turn === Side.White) {
+    if (this.turn === Side.Black) {
       shower.style.transform = "translate(-50%, -50%) rotate(180deg)";
     }
 
@@ -359,8 +365,14 @@ export class Game {
     const presentPiece = this.board[this.getIndexWhoseLocationIs(presentLocation)];
     let makeZero = false;
 
+    let ate = false;
+    let castling = "";
+    let promote = false;
+    let nowPiece = presentPiece.piece;
+
     /* 기본적인 움직임(먹기) */
     if (removeIDX !== -1 && this.board[removeIDX].side !== this.turn) {
+      ate = true;
       if (show) {
         this.eatens[this.turn ? "white" : "black"].push(
           this.board[removeIDX].piece === Piece.NighQueen
@@ -383,6 +395,7 @@ export class Game {
 
     /* 앙파상 */
     if (removeIDX === -1 && presentPiece.piece === Piece.Pawn && willMoveLocation.hori - presentPiece.hori) {
+      ate = true;
       removeIDX = this.getIndexWhoseLocationIs({
         vert: willMoveLocation.vert - (presentPiece.side * 2 - 1),
         hori: willMoveLocation.hori
@@ -425,6 +438,7 @@ export class Game {
     let caslingName = "킹";
     if (presentPiece.piece === Piece.King && presentPiece.haveMoved === false) {
       if (willMoveLocation.hori - presentPiece.hori === 2) {
+        castling = "0-0";
         this.board[this.getIndexWhoseLocationIs({ vert:presentPiece.vert, hori: this.boardsize })].location = {
           vert: presentPiece.vert,
           hori: presentPiece.hori + 1
@@ -432,6 +446,7 @@ export class Game {
       }
       if (willMoveLocation.hori - presentPiece.hori === -2) {
         caslingName = "퀸"
+        castling = "0-0-0";
         this.board[this.getIndexWhoseLocationIs({ vert:presentPiece.vert, hori: 1 })].location = {
           vert: presentPiece.vert,
           hori: presentPiece.hori - 1
@@ -458,15 +473,6 @@ export class Game {
       presentPiece.haveMoved = true;
     }
 
-    /* 기보에 저장 */
-    if (show) {
-      notation.add({
-        from: [presentPiece.location.vert, presentPiece.location.hori],
-        to: [willMoveLocation.vert, willMoveLocation.hori]
-      });
-    }
-    
-
     /* 움직이기! */
     presentPiece.location = willMoveLocation;
     if (show) {
@@ -479,6 +485,7 @@ export class Game {
 
     /* 프로모션 */
     if (willMoveLocation.vert === (presentPiece.side ? this.boardsize : 1) && presentPiece.piece === Piece.Pawn && show) {
+      promote = true;
       const pieceToPromote = await promotion(this.mode);
       let pieceToPromotePiece = Piece.null;
       switch(pieceToPromote) {
@@ -499,6 +506,11 @@ export class Game {
           break;
       }
       presentPiece.piece = pieceToPromotePiece;
+    }
+
+    /* 기보에 저장 */
+    if (show) {
+      notation.add(nowPiece, presentPiece.location, ate, promote, this.ifMySideChecked(this.turn ? Side.White : Side.Black), castling);
     }
 
     return;
@@ -582,5 +594,42 @@ export class Game {
       }
     }
     return false;
+  }
+
+  public trifoldRep(notation: Notation) {
+    const n = notation.notation;
+    const shifted = n.shift();
+
+    let repeat = false;
+    for (let turm = 2; turm < n.length; turm += 2) {
+      const tiedN = Game.tieArray(n, turm);
+      if (
+        tiedN.length >= 2
+        && tiedN[0] === tiedN[1]
+        && shifted
+        && Game.reverseStr(tiedN[0]).indexOf(Game.reverseStr(shifted!)) === 0
+      ) {
+        repeat = true;
+        break;
+      }
+    }
+
+    if (shifted !== undefined) {
+      n.unshift(shifted);
+    }
+
+    return repeat;
+  }
+
+  static tieArray(arr: Array<string>, size: number) {
+    let tiedArray = [];
+    for (let i = 0; i < arr.length; i += size) {
+      tiedArray.push(arr.slice(i, i + size).join(""));
+    }
+    return tiedArray;
+  }
+
+  static reverseStr(str: string) {
+    return str.split('').reverse().join();
   }
 }

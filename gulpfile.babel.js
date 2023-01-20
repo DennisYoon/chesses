@@ -10,7 +10,7 @@ const tsProject = ts.createProject("tsconfig.json");
 const routes = {
   typescript: {
     src: ["typescript/modules/*.ts", "typescript/main.ts"],
-    dest: "src/main",
+    dest: "src/pages/main",
     watch: ["typescript/modules/*.ts", "typescript/main.ts"]
   }
 };
@@ -24,7 +24,7 @@ const Typescript = () =>
     .pipe(concat("index.js"))
     .pipe(gulp.dest(routes.typescript.dest));
 
-const Clean = () => del("src/index.js");
+const Clean = () => del("src/pages/main/index.js");
 
 const Watch = () => {
   gulp.watch(routes.typescript.watch, Typescript);

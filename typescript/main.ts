@@ -1,12 +1,16 @@
 import { Game } from "./modules/game";
 import { Side, Mode } from "./modules/types4game";
 import { applyFullscreen } from "./modules/fullscreen";
-import { promotionGrid, special } from "./modules/dom";
+import { customs, gameInfos, promotionGrid, special } from "./modules/dom";
 import { urlAccess } from "./modules/urlAccess";
 import { eatenPieces } from "./modules/eatenPieces";
 import { Timer } from "./modules/timer";
 import { Notation } from "./modules/notation";
 import { shower } from "./modules/dom";
+import { setCustomizableChess } from "./modules/customizableChessSetting";
+import { createBoard } from "./modules/createBoard";
+import { board } from "./modules/dom";
+import { PieceStruct } from "./modules/pieceStruct";
 
 /* Game Variables */
 let BOARDSIZE = 8;
@@ -15,26 +19,59 @@ let checkedOnce = false;
 let timeOver = false;
 
 /* 게임 전 */
-urlAccess(window.location.href).then(mode => {
-  if (mode as Mode === Mode.tenXten) {
+urlAccess(window.location.href).then(async mode => {
+  let customBoard: PieceStruct[] = [];
+
+  if (mode === Mode.tenXten) {
     BOARDSIZE = 10;
     promotionGrid!.style.gridTemplateColumns = `repeat(5, 1fr)`;
   } else {
     special!.remove();
   }
+
+  if (mode === Mode.customizable) {
+    for (let gameInfo of gameInfos) {
+      gameInfo.style.display = "none";
+    }
+
+    createBoard(8);
+    customBoard = await setCustomizableChess();
+    board!.innerHTML = "";
+
+    for (let gameInfo of gameInfos) {
+      gameInfo.style.display = "block";
+    }
+  }
+  for (let custom of customs) {
+    custom.style.display = "none";
+  }
+
   MODE = mode as Mode;
-  playGame();
+  playGame(customBoard);
   applyFullscreen();
 });
 
+function getParam(param: string) {
+  return new URL(window.location.href).searchParams.get(param);
+}
 
 /* 게임! */
-async function playGame() {
-  const g = new Game(BOARDSIZE);
-  const t = new Timer({
-    second: 1200,
-    plus: 5
+async function playGame(customBoard: PieceStruct[] = []) {
+  const g = new Game({
+    boardsize: BOARDSIZE,
+    customBoard
   });
+
+  let t : Timer = new Timer({second: 0, plus: 0});
+  if (getParam("basicTime") && getParam("addTime")) {
+    t = new Timer({
+      second: parseInt(getParam("basicTime")!),
+      plus: parseInt(getParam("addTime")!)
+    });
+  } else {
+    window.location.href = "./index.html?mode=404";
+  }
+    
   const n = new Notation();
   const s = new Sound();
 
@@ -45,9 +82,7 @@ async function playGame() {
 
   const timeOut = setInterval(() => {
     if (t.white <= 0) {
-      // 타이머 종료
-      clearInterval(t.wTimer);
-      clearInterval(t.bTimer);
+      t.clear();
 
       shower.innerHTML = "시간 초과에 의한<br>흑돌의 승!!";
       shower.style.color = "red";
@@ -59,9 +94,7 @@ async function playGame() {
       clearInterval(timeOut);
     }
     if (t.black <= 0) {
-      // 타이머 종료
-      clearInterval(t.wTimer);
-      clearInterval(t.bTimer);
+      t.clear();
 
       shower.innerHTML = "시간 초과에 의한<br>백돌의 승!!";
       shower.style.color = "red";
@@ -106,9 +139,7 @@ async function playGame() {
           .map(v => g.movableLocationsOf(g.getIndexWhoseLocationIs(v.location), true).length)
           .every(v => v === 0)
       ) {
-        // 타이머 종료
-        clearInterval(t.wTimer);
-        clearInterval(t.bTimer);
+        t.clear();
 
         // 먹은거 추가
         eatenPieces(g.eatens);
@@ -130,6 +161,7 @@ async function playGame() {
           // 스테일 메이트
           s.stalemate.play();
           shower.innerHTML = "스테일 메이트에<br>의한 무승부!!";
+          shower.style.color = "black";
           shower.style.display = "flex";
         }
         //게임 종료
@@ -138,27 +170,36 @@ async function playGame() {
 
       // 50수 판별
       if (g.moves >= 50) {
-        // 타이머 종료
-        clearInterval(t.wTimer);
-        clearInterval(t.bTimer);
+        t.clear();
 
         s.fiftyMoves.play();
         shower.innerHTML = "50수 룰에<br>의한 무승부!!";
+        shower.style.color = "black";
         shower.style.display = "flex";
         break;
       }
 
       // 체크메이트 불가 판별
       if (g.impossibilityOfCheckMate()) {
-        // 타이머 종료
-        clearInterval(t.wTimer);
-        clearInterval(t.bTimer);
+        t.clear();
 
         s.impossibilityOfCheckmate.play();
         shower.innerHTML = "체크메이트 불가에<br>의한 무승부!!";
+        shower.style.color = "black";
         shower.style.display = "flex";
         break;
       }
+    }
+
+    // 3회 동형 판별
+    if (g.trifoldRep(n)) {
+      t.clear();
+
+      s.trifoldRepitition.play();
+      shower.innerHTML = "3회 동형 반복에<br>의한 무승부!!"
+      shower.style.color = "black";
+      shower.style.display = "flex";
+      break;
     }
 
     g.showPieces();
@@ -167,10 +208,4 @@ async function playGame() {
 
   // 게임 종료 후
   g.showPieces();
-}
-
-function twoDimenArr(arr: any[], chuck: number) {
-  return arr.map((_, i) => {
-    return i % chuck ? [] : arr.slice(i, i + chuck);
-  }); // thank you chatGPT
 }
