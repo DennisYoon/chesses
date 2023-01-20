@@ -159,12 +159,6 @@ async function playGame() {
         shower.style.display = "flex";
         break;
       }
-
-      // 3회 동행 판별
-      
-    
-
-      
     }
 
     g.showPieces();
