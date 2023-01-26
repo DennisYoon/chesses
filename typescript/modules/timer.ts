@@ -32,20 +32,11 @@ export class Timer {
   stop(turn: Side) {
     if (turn === Side.White) {  
       clearInterval(this.wTimer);
-
-      if (this.white + this.plus <= this.originalSecond) {
-        this.white += this.plus;
-      } else {
-        this.white = this.originalSecond;
-      }
+      this.white += this.plus;
     } else {
       clearInterval(this.bTimer);
+      this.black += this.plus;
 
-      if (this.black + this.plus <= this.originalSecond) {
-        this.black += this.plus;
-      } else {
-        this.black = this.originalSecond;
-      }
     }
   }
 

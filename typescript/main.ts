@@ -11,6 +11,7 @@ import { setCustomizableChess } from "./modules/customizableChessSetting";
 import { createBoard } from "./modules/createBoard";
 import { board } from "./modules/dom";
 import { PieceStruct } from "./modules/pieceStruct";
+import { classic } from "./modules/boards";
 
 /* Game Variables */
 let BOARDSIZE = 8;
@@ -19,6 +20,8 @@ let checkedOnce = false;
 let timeOver = false;
 
 /* 게임 전 */
+applyFullscreen();
+
 urlAccess(window.location.href).then(async mode => {
   let customBoard: PieceStruct[] = [];
 
@@ -35,6 +38,7 @@ urlAccess(window.location.href).then(async mode => {
     }
 
     createBoard(8);
+    customBoard = classic();
     customBoard = await setCustomizableChess();
     board!.innerHTML = "";
 
@@ -48,7 +52,6 @@ urlAccess(window.location.href).then(async mode => {
 
   MODE = mode as Mode;
   playGame(customBoard);
-  applyFullscreen();
 });
 
 function getParam(param: string) {
@@ -61,6 +64,7 @@ async function playGame(customBoard: PieceStruct[] = []) {
     boardsize: BOARDSIZE,
     customBoard
   });
+  g.mode = MODE;
 
   let t : Timer = new Timer({second: 0, plus: 0});
   if (getParam("basicTime") && getParam("addTime")) {
@@ -106,6 +110,21 @@ async function playGame(customBoard: PieceStruct[] = []) {
       clearInterval(timeOut);
     }
   }, 200);
+
+  if ([
+    g.ifMySideChecked(Side.White),
+    g.ifMySideChecked(Side.Black),
+    g.board
+      .filter(v => v.side === g.turn)
+      .map(v => g.movableLocationsOf(g.getIndexWhoseLocationIs(v.location), true).length)
+      .every(v => v === 0),
+  ].some(v => v)) {
+    t.clear();
+    shower.innerHTML = "시작부터 체크 or<br>체크메이트 or<br>스테일메이트";
+    shower.style.color = "purple";
+    shower.style.display = "flex";
+    return;
+  }
 
   while (true) {
     // 체크 보여주기

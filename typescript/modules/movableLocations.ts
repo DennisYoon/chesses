@@ -18,7 +18,7 @@ export function getPieceWhoseLocationIs(locationX: number, locationY: number, bo
   }
 }
 
-function king(piece: PieceStruct, board: PieceStruct[], bs: number, cc = true) {
+function king(piece: PieceStruct, board: PieceStruct[], bs: number, cc = true, custom: boolean = false) {
   let movableLocations: Location[] = [
     { vert: piece.vert + 1, hori: piece.hori + 1 },
     { vert: piece.vert + 1, hori: piece.hori - 1 },
@@ -37,27 +37,29 @@ function king(piece: PieceStruct, board: PieceStruct[], bs: number, cc = true) {
     return presentPiece.side !== piece.side;
   });
 
-  if (piece.haveMoved === false) {
-    if (
-      Array(bs / 2 - 2).fill(0).map((_, i) => i + 1).every(v => getPieceWhoseLocationIs(piece.vert, piece.hori + v, board).piece === -1)
-      &&
-      getPieceWhoseLocationIs(piece.vert, bs, board).haveMoved === false
-    ) {
-      movableLocations.push({
-        vert: piece.vert,
-        hori: piece.hori + 2
-      });
-    }
-  
-    if (
-      Array(bs / 2 - 1).fill(0).map((_, i) => i + 1).every(v => getPieceWhoseLocationIs(piece.vert, piece.hori - v, board).piece === -1)
-      &&
-      getPieceWhoseLocationIs(piece.vert, 1, board).haveMoved === false
+  if (!custom) {
+    if (piece.haveMoved === false) {
+      if (
+        Array(bs / 2 - 2).fill(0).map((_, i) => i + 1).every(v => getPieceWhoseLocationIs(piece.vert, piece.hori + v, board).piece === -1)
+        &&
+        getPieceWhoseLocationIs(piece.vert, bs, board).haveMoved === false
       ) {
-      movableLocations.push({
-        vert: piece.vert,
-        hori: piece.hori - 2
-      });
+        movableLocations.push({
+          vert: piece.vert,
+          hori: piece.hori + 2
+        });
+      }
+    
+      if (
+        Array(bs / 2 - 1).fill(0).map((_, i) => i + 1).every(v => getPieceWhoseLocationIs(piece.vert, piece.hori - v, board).piece === -1)
+        &&
+        getPieceWhoseLocationIs(piece.vert, 1, board).haveMoved === false
+        ) {
+        movableLocations.push({
+          vert: piece.vert,
+          hori: piece.hori - 2
+        });
+      }
     }
   }
   

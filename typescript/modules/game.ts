@@ -24,10 +24,12 @@ export class Game {
   public eatens: Eaten = { white: [], black: [] };
   public showdelay = 2000;
   public moves = 0;
+  public custom = true;
 
   constructor({boardsize, customBoard = []}: {boardsize: number, customBoard: PieceStruct[]}) {
     if (customBoard.length) {
       this.board = customBoard;
+      this.custom = true;
     } else {
       this.board = boardsize === 10 ? tenXten() : classic();
     }
@@ -139,6 +141,9 @@ export class Game {
     }
 
     let movableLocations = fnToRun(me, this.board, this.boardsize);
+    if (this.custom && me.piece === Piece.King) {
+      movableLocations = ml.king(me, this.board, this.boardsize, true, true);
+    }
 
     if (virtual) {
       const lastBoard = JSON.stringify(this.board);
@@ -154,7 +159,8 @@ export class Game {
           });
           
           this.moveTo(me.location, location, {show: false, notation: new Notation});
-          return !this.ifMySideChecked(this.turn);
+          const mysideChecked = this.ifMySideChecked(this.turn);
+          return !mysideChecked;
         });
   
       this.board = JSON.parse(lastBoard);
@@ -167,7 +173,7 @@ export class Game {
     }
 
     // 캐슬링 실패!
-    if (me.piece === Piece.King && me.haveMoved === false) {
+    if (me.piece === Piece.King && me.haveMoved === false && !this.custom) {
       /* 킹 사이드 */ {
         const kingVert = me.vert;
         let kingHori = me.hori;
@@ -285,7 +291,7 @@ export class Game {
     return index;
   }
 
-  public ifMySideChecked(turn: Side, alter: PieceStruct = new PieceStruct(Side.null, Piece.null, {vert: -1, hori: -1})) {
+  public ifMySideChecked(turn: Side, alter: PieceStruct = new PieceStruct(Side.null, Piece.null, {vert: -1, hori: -1}), show = false) {
     let myKing = this.board.filter(v => v.piece === Piece.King && v.side === turn)[0];
     if (alter.side !== Side.null) {
       myKing = alter;
@@ -296,21 +302,27 @@ export class Game {
       const me = this.getPieceWhoseLocationIs(v);
       return [Piece.Queen, Piece.Rook, Piece.NighQueen].some(v => me.piece === v);
     });
-    if (r.length) return true;
+    if (r.length && ml.rook(myKing, this.board, this.boardsize, false).length) {
+      return true;
+    }
 
     // Bishop & Queen & NighQueen
     const b = ml.bishop(myKing, this.board, this.boardsize, false).filter(v => {
       const me = this.getPieceWhoseLocationIs(v);
       return [Piece.Bishop, Piece.Queen, Piece.NighQueen].some(v => me.piece === v);
     });
-    if (b.length) return true;
+    if (b.length && ml.bishop(myKing, this.board, this.boardsize, false).length) {
+      return true;
+    }
 
     // Night & NighQueen
     const n = ml.night(myKing, this.board, this.boardsize, false).filter(v => {
       const me = this.getPieceWhoseLocationIs(v);
       return [Piece.Night, Piece.NighQueen].some(v => me.piece === v);
     });
-    if (n.length) return true;
+    if (n.length && ml.night(myKing, this.board, this.boardsize, false).length) {
+      return true;
+    }
 
     // Pone
     let movableLocations: Location[] = [];
@@ -333,20 +345,26 @@ export class Game {
         if (presentPiece.piece === Piece.null) return false;
         return presentPiece.side !== turn;
       });
+
+    const originP = [...movableLocations];
     
-    movableLocations.filter(v => {
+    movableLocations = movableLocations.filter(v => {
       const me = this.getPieceWhoseLocationIs(v);
-      return [Piece.Pawn].some(v => me.piece === v);
+      return me.piece === Piece.Pawn;
     });
     const p = movableLocations;
-    if (p.length) return true;
+    if (p.length && originP.length) {
+      return true;
+    }
 
     // King
     const k = ml.king(myKing, this.board, this.boardsize, false).filter(v => {
       const me = this.getPieceWhoseLocationIs(v);
       return [Piece.King].some(v => me.piece === v);
     });
-    if (k.length) return true;
+    if (k.length && ml.king(myKing, this.board, this.boardsize, false).length) {
+      return true;
+    }
 
     return false;
   }

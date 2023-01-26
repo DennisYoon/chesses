@@ -10,7 +10,6 @@ export async function promotion(mode: Mode) {
   function listner(myName: string) {
     return () => {
       toPromote = myName;
-      console.log("hello");
     };
   }
 
@@ -31,7 +30,7 @@ export async function promotion(mode: Mode) {
   
   promotionWindow.style.visibility = "hidden";
   if (mode === Mode.tenXten) {
-    document.querySelector<HTMLElement>("#promotionGrid #special")!.style.visibility = "hidden";
+    document.querySelector<HTMLElement>("#special")!.style.visibility = "hidden";
   }
 
   return toPromote;
