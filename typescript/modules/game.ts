@@ -11,7 +11,6 @@ import { whiteSide, blackSide, shower } from "./dom";
 import { Notation } from "./notation";
 import { promotion } from "./promotion";
 import { Timer } from "./timer";
-import { showBoardTable } from "./_boardTable";
 
 export class Game {
   public board: PieceStruct[] = [];
@@ -24,7 +23,7 @@ export class Game {
   public eatens: Eaten = { white: [], black: [] };
   public showdelay = 2000;
   public moves = 0;
-  public custom = true;
+  public custom = false;
 
   constructor({boardsize, customBoard = []}: {boardsize: number, customBoard: PieceStruct[]}) {
     if (customBoard.length) {
